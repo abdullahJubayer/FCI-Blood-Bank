@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1051771832380",
+    "firebase_url": "https://fci-bloodbank.firebaseio.com",
+    "project_id": "fci-bloodbank",
+    "storage_bucket": "fci-bloodbank.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051771832380:android:fecc94bb8c6e908b",
+        "android_client_info": {
+          "package_name": "com.fci.androCroder.BD"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1051771832380-k3ap0ps304932otukncs3j4o0nnl6s2r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fci.androCroder.BD",
+            "certificate_hash": "3c388beed2ea22033c3f6cd318d5e6f00c7d985d"
+          }
+        },
+        {
+          "client_id": "1051771832380-k8fche50iv0nvrseh7uuo2ssrs4ec51n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO8d76KQuWyrivfPRIqz94rqfC3N_LxaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1051771832380-k8fche50iv0nvrseh7uuo2ssrs4ec51n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Login_activity"
+    android:orientation="vertical"
+    android:background="@drawable/gradient"
+    android:padding="15dp"
+    >
+
+
+
+        <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/spin_kit_login"
+            style="@style/SpinKitView.Large.Circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="352dp"
+            android:visibility="invisible"
+            app:SpinKit_Color="@color/white" />
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="FCI Blood Bank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="50dp"
+                android:textColor="@color/white"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:gravity="center"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_above="@+id/login_email_id"
+                />
+
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:id="@+id/login_email_id"
+                android:background="@drawable/et_back"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:id="@+id/login_password_id"
+                android:background="@drawable/et_back"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                />
+
+            <LinearLayout
+                android:background="@drawable/et_back"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="45dp">
+
+                <Spinner
+                    android:id="@+id/login_spinner2_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    />
+
+            </LinearLayout>
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/white"
+                android:background="@drawable/et_back"
+                android:padding="10dp"
+                android:text="LOGin"
+                android:textAllCaps="true"
+                android:id="@+id/login_log_id"
+                />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/login_to_new_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Signup Now"
+            android:textColor="#fff"
+            android:textSize="16dip"
+            android:textAllCaps="true"
+            />
+
+        <TextView
+            android:id="@+id/forgot_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Forgot Password?"
+            android:textColor="#fff"
+            android:textSize="16dip"
+            android:textAllCaps="true"
+            />
+
+
+
+</RelativeLayout>
