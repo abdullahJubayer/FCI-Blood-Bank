@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -39,6 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Menu menu;
     private FirebaseAuth mAuth;
     String U_name,U_photo,U_phone,U_last_donate,U_how_huch_donate,gender;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseMessaging.getInstance().subscribeToTopic("Notification");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

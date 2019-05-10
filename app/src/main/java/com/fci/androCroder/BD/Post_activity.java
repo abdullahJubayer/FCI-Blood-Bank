@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Post_activity extends AppCompatActivity {
+public class Post_activity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Notebook");
 
@@ -44,6 +44,7 @@ public class Post_activity extends AppCompatActivity {
     SimpleDateFormat simpledateformat;
     String Date;
     ProgressBar progressBar;
+    FloatingActionButton floatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +64,13 @@ public class Post_activity extends AppCompatActivity {
 
 
         calander = Calendar.getInstance();
+          floatingActionButton=findViewById(R.id.button_add_note);
+        floatingActionButton.setOnClickListener(this);
 
-
-        setUpRecyclerView();
+        loadData();
     }
 
-    private void setUpRecyclerView() {
+    private void loadData() {
         Query query = collectionReference.orderBy("time", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
@@ -126,57 +128,6 @@ public class Post_activity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
-
-        FloatingActionButton  floatingActionButton=findViewById(R.id.button_add_note);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                LayoutInflater inflater= LayoutInflater.from(Post_activity.this);
-                final View view=inflater.inflate(R.layout.alart_dialog_layout,null);
-                final EditText eee=view.findViewById(R.id.alart_message);
-
-
-                new AlertDialog.Builder(Post_activity.this)
-                        .setView(view)
-                        .setTitle("Request For Blood")
-                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        progressBar.setVisibility(View.VISIBLE);
-                                        User_message=eee.getText().toString();
-
-                                        simpledateformat = new SimpleDateFormat("dd/MM/yyy HH:mm");
-                                        Date = simpledateformat.format(calander.getTime());
-
-                                        if (User_message.isEmpty()){
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            Toast.makeText(Post_activity.this,"Please Write Something",Toast.LENGTH_SHORT).show();
-                                        }else {
-                                            if (!User_name.isEmpty() && !User_img.isEmpty() && !User_message.isEmpty() && !Date.isEmpty()){
-                                                saveMessage(User_name,User_img,User_message,Date);
-                                            }
-                                            else {
-                                                progressBar.setVisibility(View.INVISIBLE);
-                                                Toast.makeText(Post_activity.this,"Something Missing",Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .create()
-                        .show()
-                ;
-
-
-            }
-        });
     }
 
     @Override
@@ -191,30 +142,11 @@ public class Post_activity extends AppCompatActivity {
         adapter.stopListening();
     }
 
-    private void saveMessage(String user_name, String user_img, String user_message,String date){
-
-
-
-
-            final Map<String, Object> hash = new HashMap<>();
-            hash.clear();
-            hash.put("name",user_name);
-            hash.put("image",user_img);
-            hash.put("time",date);
-            hash.put("description",user_message);
-            collectionReference.document().set(hash).addOnCompleteListener(Post_activity.this, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(Post_activity.this,"Request Sent",Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            }).addOnFailureListener(Post_activity.this, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(Post_activity.this,"Request Failed..!",Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            });
+    @Override
+    public void onClick(View v) {
+        if (v==floatingActionButton){
+            newRequest();
+        }
     }
 
     @Override
@@ -238,4 +170,73 @@ public class Post_activity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private  void newRequest(){
+        LayoutInflater inflater= LayoutInflater.from(Post_activity.this);
+        final View view=inflater.inflate(R.layout.alart_dialog_layout,null);
+        final EditText eee=view.findViewById(R.id.alart_message);
+
+
+        new AlertDialog.Builder(Post_activity.this)
+                .setView(view)
+                .setTitle("Request For Blood")
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        User_message=eee.getText().toString();
+
+                        simpledateformat = new SimpleDateFormat("dd/MM/yyy HH:mm");
+                        Date = simpledateformat.format(calander.getTime());
+
+                        if (User_message.isEmpty()){
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(Post_activity.this,"Please Write Something",Toast.LENGTH_SHORT).show();
+                        }else {
+                            if (User_name!=null && User_img!=null && User_message!=null && Date!=null){
+                                saveMessage(User_name,User_img,User_message,Date);
+                            }
+                            else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                Toast.makeText(Post_activity.this,"Something Missing",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show()
+        ;
+    }
+
+
+    private void saveMessage(String user_name, String user_img, String user_message,String date){
+
+        final Map<String, Object> hash = new HashMap<>();
+        hash.clear();
+        hash.put("name",user_name);
+        hash.put("image",user_img);
+        hash.put("time",date);
+        hash.put("description",user_message);
+        collectionReference.document().set(hash).addOnCompleteListener(Post_activity.this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(Post_activity.this,"Request Sent",Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        }).addOnFailureListener(Post_activity.this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(Post_activity.this,"Request Failed..!",Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
 }
