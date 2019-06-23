@@ -35,7 +35,7 @@ public class uploadPhotoActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
-    private Button mButtonChooseImage;
+    Button mButtonChooseImage;
     private Button mButtonUpload;
     private EditText mEditTextFileName;
     private ImageView mImageView;
@@ -57,7 +57,9 @@ public class uploadPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_photo);
         ActionBar actionBar=getSupportActionBar();
-        actionBar.setTitle("Upload Photo");
+        if (actionBar != null) {
+            actionBar.setTitle("Upload Photo");
+        }
 
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         db = FirebaseFirestore.getInstance();
@@ -156,7 +158,7 @@ public class uploadPhotoActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.INVISIBLE);
                                 mButtonUpload.setClickable(true);
                             }else {
-                                if (!nameof_writer.isEmpty() && !imageof_writer.isEmpty() && !message.isEmpty() && !down_Url.isEmpty()){
+                                if (nameof_writer != null && imageof_writer != null){
                                     uploadData(message,down_Url,nameof_writer,imageof_writer);
                                 }
                                 else {
