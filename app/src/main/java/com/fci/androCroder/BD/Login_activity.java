@@ -1,10 +1,17 @@
 package com.fci.androCroder.BD;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,7 +44,7 @@ public class Login_activity extends AppCompatActivity {
     ProgressBar progressBar;
     SharedPreferences preferences;
     boolean doubleBackToExitPressedOnce = false;
-
+    NetworkStateRecever networkStateRecever;
 
 
     @Override
@@ -45,7 +53,11 @@ public class Login_activity extends AppCompatActivity {
         setContentView(R.layout.activity_login_activity);
 
         ActionBar actionBar=getSupportActionBar();
-        actionBar.hide();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         spinner_login2=findViewById(R.id.login_spinner2_id);
         log_email=findViewById(R.id.login_email_id);
@@ -248,5 +260,11 @@ public class Login_activity extends AppCompatActivity {
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkStateRecever);
     }
 }
