@@ -2,6 +2,8 @@ package com.fci.androCroder.BD;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +54,7 @@ public class uploadPhotoActivity extends AppCompatActivity {
     String imageof_writer;
     String message;
     ProgressBar progressBar;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,9 @@ public class uploadPhotoActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle("Upload Photo");
         }
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         db = FirebaseFirestore.getInstance();
@@ -236,5 +243,9 @@ public class uploadPhotoActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

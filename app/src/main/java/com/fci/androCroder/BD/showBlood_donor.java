@@ -1,6 +1,8 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
 
 public class showBlood_donor extends AppCompatActivity {
 
-     String Blood_group,Gender_intent;
+    String Blood_group,Gender_intent;
     ListView listView;
     FirebaseFirestore db;
     ArrayList<String> name = new ArrayList<String>();
@@ -37,6 +40,7 @@ public class showBlood_donor extends AppCompatActivity {
     ArrayList<String> blood_group = new ArrayList<String>();
     ArrayList<String> Email = new ArrayList<String>();
     ArrayList<String> Give_Blood = new ArrayList<String>();
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,9 @@ public class showBlood_donor extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("All Donor");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         db = FirebaseFirestore.getInstance();
         listView = findViewById(R.id.show_blood_listView);
@@ -139,5 +146,9 @@ public class showBlood_donor extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

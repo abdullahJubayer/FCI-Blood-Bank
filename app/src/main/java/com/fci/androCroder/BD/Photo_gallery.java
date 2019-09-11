@@ -1,6 +1,8 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -44,6 +47,7 @@ public class Photo_gallery extends AppCompatActivity {
 
     FirebaseFirestore db;
     private List<Upload> mUploads;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,9 @@ public class Photo_gallery extends AppCompatActivity {
         setContentView(R.layout.activity_photo_gallery);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Gallery");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -136,4 +143,9 @@ public class Photo_gallery extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

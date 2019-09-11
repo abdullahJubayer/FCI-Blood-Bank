@@ -3,6 +3,8 @@ package com.fci.androCroder.BD;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -11,15 +13,21 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
+
 public class Male_Female_Choose extends AppCompatActivity {
 
     CardView man_view,women_view;
     String Blood_group;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_male__female__choose);
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         man_view=findViewById(R.id.choose_man);
         women_view=findViewById(R.id.choose_women);
@@ -75,5 +83,11 @@ public class Male_Female_Choose extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
     }
 }

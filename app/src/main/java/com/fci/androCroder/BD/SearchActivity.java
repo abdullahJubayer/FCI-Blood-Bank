@@ -1,11 +1,15 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
     CardView
@@ -17,6 +21,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             o_negative,
             ab_positive,
             ab_negative;
+    private NetworkStateRecever networkStateRecever;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +30,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Search Donor");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
 
         a_positive=findViewById(R.id.blood_group_a_positibe);
@@ -87,5 +96,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         intent.putExtra("Blood_group",s);
         startActivity(intent);
         finishActivity(0);
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
     }
 }

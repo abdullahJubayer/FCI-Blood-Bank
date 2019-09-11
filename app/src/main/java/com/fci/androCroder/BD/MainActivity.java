@@ -1,6 +1,8 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Menu menu;
     private FirebaseAuth mAuth;
     String U_name,U_photo,U_phone,U_last_donate,U_how_huch_donate,gender;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onStart() {
@@ -56,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Home");
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
 
         drawer = findViewById(R.id.drawer_layout);
@@ -313,4 +320,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

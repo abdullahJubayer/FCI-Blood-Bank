@@ -1,11 +1,15 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 
 public class TopDonor extends AppCompatActivity implements View.OnClickListener {
 
@@ -18,6 +22,7 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
             o_negative,
             ab_positive,
             ab_negative;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,9 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
 
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Top Donor");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
 
         a_positive=findViewById(R.id.top_donor_a_plus);
@@ -88,5 +96,11 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
         intent.putExtra("Blood_group",s);
         startActivity(intent);
         finishActivity(0);
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
     }
 }

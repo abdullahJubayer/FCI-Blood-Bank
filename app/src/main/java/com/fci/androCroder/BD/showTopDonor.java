@@ -1,12 +1,15 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,6 +22,7 @@ public class showTopDonor extends AppCompatActivity {
 
 
     private Top_Donor_NoteAdapter top_donor_noteAdapter;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,9 @@ public class showTopDonor extends AppCompatActivity {
         setContentView(R.layout.activity_show_top_donor);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Top Donor");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         Intent intent=getIntent();
         blood_group=intent.getStringExtra("Blood_group");
@@ -60,7 +67,8 @@ public class showTopDonor extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         top_donor_noteAdapter.stopListening();
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
     }
 }

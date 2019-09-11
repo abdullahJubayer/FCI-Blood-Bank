@@ -1,6 +1,8 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,18 +10,24 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DonorDetails extends AppCompatActivity {
     CircleImageView details_image;
     TextView de_name,de_email,de_phone,de_blood_grp,de_lastdonet,de_times,de_village,de_upazilla;
+    private NetworkStateRecever networkStateRecever;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donor_details);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Donor Details");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         details_image=findViewById(R.id.details_image);
         de_name=findViewById(R.id.details_name);
@@ -59,5 +67,11 @@ public class DonorDetails extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
     }
 }

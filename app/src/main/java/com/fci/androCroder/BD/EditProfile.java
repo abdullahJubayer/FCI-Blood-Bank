@@ -1,6 +1,8 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +43,7 @@ public class EditProfile extends AppCompatActivity {
     String bll, ell,phn,last_date,how_m,gender_m;
     Button up_button;
     ProgressBar progressBar;
+    private NetworkStateRecever networkStateRecever;
 
 
     @Override
@@ -48,6 +52,9 @@ public class EditProfile extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Edit Profile");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         mStorageRef = FirebaseStorage.getInstance().getReference("editable_photo");
         db = FirebaseFirestore.getInstance();
@@ -304,5 +311,9 @@ public class EditProfile extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

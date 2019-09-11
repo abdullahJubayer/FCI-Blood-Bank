@@ -1,7 +1,9 @@
 package com.fci.androCroder.BD;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -18,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +54,7 @@ public class Add_Donor extends AppCompatActivity  {
     ArrayAdapter<CharSequence> adapterGender;
     ArrayAdapter<CharSequence> adapterBlood;
     ProgressBar progressBar;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,9 @@ public class Add_Donor extends AppCompatActivity  {
 
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("SignUp");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         donor_image=findViewById(R.id.donor_picture);
         d_name=findViewById(R.id.donor_name);
@@ -376,4 +383,9 @@ public class Add_Donor extends AppCompatActivity  {
         return valid;
     }
 
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkStateRecever);
+        super.onStop();
+    }
 }

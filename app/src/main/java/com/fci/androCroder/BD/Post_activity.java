@@ -3,6 +3,8 @@ package com.fci.androCroder.BD;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +48,7 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
     String Date;
     ProgressBar progressBar;
     FloatingActionButton floatingActionButton;
+    private NetworkStateRecever networkStateRecever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,9 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
         ActionBar actionBar=getSupportActionBar();
         assert actionBar != null;
         actionBar.setTitle("Requests");
+
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
 
         progressBar=findViewById(R.id.spin_kit_post);
@@ -139,8 +146,10 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onStop() {
-        super.onStop();
+        unregisterReceiver(networkStateRecever);
         adapter.stopListening();
+        super.onStop();
+
     }
 
     @Override
@@ -159,9 +168,6 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
 
