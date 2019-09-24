@@ -3,9 +3,8 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -34,18 +32,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 public class Add_Donor extends AppCompatActivity  {
     private static final int RQ_CODE = 1;
     EditText d_name,d_depertmant,d_semester,d_phone1,d_village,d_upazilla,d_city,d_email,d_pass;
     Button save_button;
     CircleImageView donor_image;
-    Uri picture_uri;
+    File picture_file;
     String ImagedownloadUrl;
     FirebaseFirestore db;
     private StorageReference mStorageRef;
@@ -62,10 +63,8 @@ public class Add_Donor extends AppCompatActivity  {
         setContentView(R.layout.activity_add__donor);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("SignUp");
-
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         donor_image=findViewById(R.id.donor_picture);
         d_name=findViewById(R.id.donor_name);
@@ -140,14 +139,13 @@ public class Add_Donor extends AppCompatActivity  {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode==RQ_CODE && resultCode==RESULT_OK && data!=null && data.getData()!=null){
-            picture_uri=data.getData();
+        if (requestCode==RQ_CODE && resultCode==RESULT_OK && data!=null){
             try {
-                Bitmap bitmap=MediaStore.Images.Media.getBitmap(getContentResolver(),picture_uri);
-//                donor_image.setImageBitmap(bitmap);
-                Glide.with(Add_Donor.this).load(bitmap).into(donor_image);
+                picture_file=FileUtil.from(Add_Donor.this,data.getData());
+                Bitmap img =BitmapFactory.decodeFile(picture_file.getAbsolutePath());
+                Glide.with(Add_Donor.this).load(img).into(donor_image);
             } catch (IOException e) {
-                e.printStackTrace();
+                Toast.makeText(Add_Donor.this,"Error in Select Image",Toast.LENGTH_LONG).show();
             }
         }
         else {
@@ -170,38 +168,49 @@ public class Add_Donor extends AppCompatActivity  {
         final StorageReference storageReference=
                 FirebaseStorage.getInstance().getReference("All_donor_photo/"+name+batch+".jpg");
 
-        if (picture_uri!=null){
-            storageReference.putFile(picture_uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()){
-                        throw task.getException();
-                    }
-                    return storageReference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()){
-                        ImagedownloadUrl = task.getResult().toString();
-                        UploadUserData();
+        if (picture_file !=null){
+            try {
+                Bitmap compressedImage=new Compressor(this)
+                        .setMaxWidth(200)
+                        .setMaxHeight(200)
+                        .setQuality(75)
+                        .setCompressFormat(Bitmap.CompressFormat.JPEG)
+                        .compressToBitmap(picture_file.getAbsoluteFile());
 
-                        Log.i("downloadUrllllll", "onComplete: Url: "+ ImagedownloadUrl);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                compressedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                UploadTask uploadTask=storageReference.putBytes(data);
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()){
+                            ImagedownloadUrl = task.getResult().toString();
+                            UploadUserData();
+
+                            Log.i("downloadUrllllll", "onComplete: Url: "+ ImagedownloadUrl);
+                        }
+                        else {
+                            Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            save_button.setClickable(true);
+                        }
                     }
-                    else {
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                         save_button.setClickable(true);
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    save_button.setClickable(true);
-                }
-            });
+                });
+
+            } catch (IOException e) {
+                Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+                save_button.setClickable(true);
+            }
 
         }else {
             ImagedownloadUrl="https://firebasestorage.googleapis.com/v0/b/fci-bloodbank.appspot.com/o/editable_photo%2F1555583524434.jpg?alt=media&token=caa5e1b2-5423-4496-8811-ec517da8286c";
@@ -260,7 +269,7 @@ public class Add_Donor extends AppCompatActivity  {
                }).addOnFailureListener(new OnFailureListener() {
                    @Override
                    public void onFailure(@NonNull Exception e) {
-                       Toast.makeText(Add_Donor.this, "Donor Registered Failed...!", Toast.LENGTH_SHORT).show();
+                       Toast.makeText(Add_Donor.this, "Donor Registered Failed...!"+e.getMessage(), Toast.LENGTH_SHORT).show();
                        progressBar.setVisibility(View.INVISIBLE);
                        save_button.setClickable(true);
                    }
@@ -283,7 +292,7 @@ public class Add_Donor extends AppCompatActivity  {
                             }
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(getApplicationContext(), "Donor Registered failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Donor Registered failed3", Toast.LENGTH_SHORT).show();
                         }
 
                         // ...
@@ -291,7 +300,7 @@ public class Add_Donor extends AppCompatActivity  {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Donor Registered failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Donor Registered failed2"+e.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
                 save_button.setClickable(true);
             }
@@ -383,9 +392,17 @@ public class Add_Donor extends AppCompatActivity  {
         return valid;
     }
 
+
     @Override
     protected void onStop() {
         unregisterReceiver(networkStateRecever);
         super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 }

@@ -50,12 +50,8 @@ public class showBlood_donor extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("All Donor");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         db = FirebaseFirestore.getInstance();
         listView = findViewById(R.id.show_blood_listView);
-
 
         Intent intent = getIntent();
         Blood_group = intent.getStringExtra("blood_group");
@@ -144,6 +140,13 @@ public class showBlood_donor extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

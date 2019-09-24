@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         FirebaseMessaging.getInstance().subscribeToTopic("Notification");
     }
 
@@ -60,10 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Home");
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
 
         drawer = findViewById(R.id.drawer_layout);
         toggle=new ActionBarDrawerToggle(this,drawer,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
@@ -325,4 +322,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unregisterReceiver(networkStateRecever);
         super.onStop();
     }
+
 }

@@ -26,9 +26,6 @@ public class DonorDetails extends AppCompatActivity {
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Donor Details");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         details_image=findViewById(R.id.details_image);
         de_name=findViewById(R.id.details_name);
         de_email=findViewById(R.id.details_email);
@@ -67,6 +64,13 @@ public class DonorDetails extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

@@ -31,9 +31,6 @@ public class Forgot_activity extends AppCompatActivity {
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Forgot Password");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         email=findViewById(R.id.forgot_email);
         send_btn=findViewById(R.id.forgot_send_btn);
         auth = FirebaseAuth.getInstance();
@@ -67,6 +64,13 @@ public class Forgot_activity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

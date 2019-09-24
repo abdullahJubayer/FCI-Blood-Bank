@@ -58,10 +58,6 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
         assert actionBar != null;
         actionBar.setTitle("Requests");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-
         progressBar=findViewById(R.id.spin_kit_post);
         FadingCircle fadingCircle = new FadingCircle();
         progressBar.setIndeterminateDrawable(fadingCircle);
@@ -142,6 +138,8 @@ public class Post_activity extends AppCompatActivity implements View.OnClickList
     protected void onStart() {
         super.onStart();
         adapter.startListening();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

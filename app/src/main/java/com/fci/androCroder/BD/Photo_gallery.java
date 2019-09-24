@@ -56,9 +56,6 @@ public class Photo_gallery extends AppCompatActivity {
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Gallery");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -126,9 +123,7 @@ public class Photo_gallery extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 uploadPhotogalleryActivity();
-
             }
         });
 
@@ -137,10 +132,16 @@ public class Photo_gallery extends AppCompatActivity {
 
     private void uploadPhotogalleryActivity() {
         Intent intent=new Intent(getApplicationContext(),uploadPhotoActivity.class);
-
         intent.putExtra("nameOfSender",User_name);
         intent.putExtra("imageOfSender",User_img);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

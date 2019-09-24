@@ -2,6 +2,8 @@ package com.fci.androCroder.BD;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -9,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,14 +32,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 public class EditProfile extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     EditText e_phone, e_lastdonate, e_how;
     CircleImageView e_image;
-    private Uri mImageUri;
+    private File picture_file;
     String down_Url;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
@@ -52,9 +60,6 @@ public class EditProfile extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Edit Profile");
-
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         mStorageRef = FirebaseStorage.getInstance().getReference("editable_photo");
         db = FirebaseFirestore.getInstance();
@@ -112,11 +117,17 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            mImageUri = data.getData();
-
-            Glide.with(this).load(mImageUri).into(e_image);
+        if (requestCode==PICK_IMAGE_REQUEST && resultCode==RESULT_OK && data!=null){
+            try {
+                picture_file=FileUtil.from(EditProfile.this,data.getData());
+                Bitmap img = BitmapFactory.decodeFile(picture_file.getAbsolutePath());
+                Glide.with(EditProfile.this).load(img).into(e_image);
+            } catch (IOException e) {
+                Toast.makeText(EditProfile.this,"Error in Select Image",Toast.LENGTH_LONG).show();
+            }
+        }
+        else {
+            Toast.makeText(EditProfile.this,"Error in Select Image",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -126,54 +137,52 @@ public class EditProfile extends AppCompatActivity {
         final StorageReference storageReference = mStorageRef.child(System.currentTimeMillis()
                 + "." + "jpg");
 
-        if (mImageUri != null) {
-            storageReference.putFile(mImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
+        if (picture_file !=null){
+            try {
+                Bitmap compressedImage=new Compressor(this)
+                        .setMaxWidth(200)
+                        .setMaxHeight(200)
+                        .setQuality(75)
+                        .setCompressFormat(Bitmap.CompressFormat.JPEG)
+                        .compressToBitmap(picture_file.getAbsoluteFile());
 
-                    }
-                    return storageReference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                            }
-                        }, 500);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                compressedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
 
-                        if (task.isSuccessful()) {
-
+                UploadTask uploadTask=storageReference.putBytes(data);
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()){
                             down_Url = task.getResult().toString();
                             uploadWithImage();
 
+                            Log.i("downloadUrllllll", "onComplete: Url: "+ down_Url);
                         }
-
-                    } else {
-                        Toast.makeText(EditProfile.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
+                        else {
+                            Toast.makeText(EditProfile.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            up_button.setClickable(true);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(EditProfile.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                         up_button.setClickable(true);
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(EditProfile.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    up_button.setClickable(true);
-                }
-            });
+                });
 
+            } catch (IOException e) {
+                Toast.makeText(EditProfile.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+                up_button.setClickable(true);
+            }
 
         }else {
-
             uploadWithoutImage();
-
         }
 
     }
@@ -309,6 +318,13 @@ public class EditProfile extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

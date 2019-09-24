@@ -31,10 +31,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Search Donor");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-
         a_positive=findViewById(R.id.blood_group_a_positibe);
         a_negative=findViewById(R.id.blood_group_a_negative);
         b_positive=findViewById(R.id.blood_group_b_positive);
@@ -43,7 +39,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         o_negative=findViewById(R.id.blood_group_o_negative);
         ab_positive=findViewById(R.id.blood_group_ab_positive);
         ab_negative=findViewById(R.id.blood_group_ab_negative);
-
 
         setListner();
     }
@@ -96,6 +91,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         intent.putExtra("Blood_group",s);
         startActivity(intent);
         finishActivity(0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

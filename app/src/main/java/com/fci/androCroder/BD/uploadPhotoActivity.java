@@ -3,6 +3,8 @@ package com.fci.androCroder.BD;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -31,25 +33,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 
 public class uploadPhotoActivity extends AppCompatActivity {
 
-
     private static final int PICK_IMAGE_REQUEST = 1;
-
     Button mButtonChooseImage;
     private Button mButtonUpload;
     private EditText mEditTextFileName;
     private ImageView mImageView;
-
-    private Uri mImageUri;
+    private File picture_file;
     String down_Url;
-
     private StorageReference mStorageRef;
     FirebaseFirestore db;
-
-
     String nameof_writer;
     String imageof_writer;
     String message;
@@ -65,8 +63,6 @@ public class uploadPhotoActivity extends AppCompatActivity {
             actionBar.setTitle("Upload Photo");
         }
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         db = FirebaseFirestore.getInstance();
@@ -103,7 +99,7 @@ public class uploadPhotoActivity extends AppCompatActivity {
                 mButtonUpload.setClickable(false);
 
                 message=mEditTextFileName.getText().toString();
-                if (mImageUri!=null){
+                if (picture_file!=null){
                     if ( !message.isEmpty()){
                         uploadImage(message);
                     }else {
@@ -235,12 +231,25 @@ public class uploadPhotoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            mImageUri = data.getData();
-
-            Glide.with(this).load(mImageUri).into(mImageView);
+        if (requestCode==PICK_IMAGE_REQUEST && resultCode==RESULT_OK && data!=null){
+            try {
+                picture_file=FileUtil.from(uploadPhotoActivity.this,data.getData());
+                Bitmap img = BitmapFactory.decodeFile(picture_file.getAbsolutePath());
+                Glide.with(uploadPhotoActivity.this).load(img).into(mImageView);
+            } catch (IOException e) {
+                Toast.makeText(uploadPhotoActivity.this,"Error in Select Image",Toast.LENGTH_LONG).show();
+            }
         }
+        else {
+            Toast.makeText(uploadPhotoActivity.this,"Error in Select Image",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

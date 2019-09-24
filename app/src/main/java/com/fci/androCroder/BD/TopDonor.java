@@ -29,13 +29,8 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top_donor);
 
-
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Top Donor");
-
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
 
         a_positive=findViewById(R.id.top_donor_a_plus);
         a_negative=findViewById(R.id.top_donor_a_minus);
@@ -45,7 +40,6 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
         o_negative=findViewById(R.id.top_donor_o_minus);
         ab_positive=findViewById(R.id.top_donor_ab_plus);
         ab_negative=findViewById(R.id.top_donor_ab_minus);
-
 
         addListner();
     }
@@ -96,6 +90,13 @@ public class TopDonor extends AppCompatActivity implements View.OnClickListener 
         intent.putExtra("Blood_group",s);
         startActivity(intent);
         finishActivity(0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

@@ -31,9 +31,6 @@ public class showTopDonor extends AppCompatActivity {
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Top Donor");
 
-        networkStateRecever=new NetworkStateRecever();
-        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         Intent intent=getIntent();
         blood_group=intent.getStringExtra("Blood_group");
 
@@ -63,6 +60,8 @@ public class showTopDonor extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         top_donor_noteAdapter.startListening();
+        networkStateRecever=new NetworkStateRecever();
+        registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override

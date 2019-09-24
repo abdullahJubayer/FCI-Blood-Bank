@@ -19,11 +19,14 @@ public class Facts extends AppCompatActivity {
 
         ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("Facts");
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         networkStateRecever=new NetworkStateRecever();
         registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
-
 
     @Override
     protected void onStop() {
