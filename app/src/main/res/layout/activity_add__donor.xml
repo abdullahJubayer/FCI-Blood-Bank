@@ -106,6 +106,20 @@
 
             </LinearLayout>
 
+
+            <!-- Password Label -->
+            <EditText android:id="@+id/donor_address"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Address"
+                android:paddingLeft="10dp"
+                android:background="@drawable/et_back"
+                />
+
+
             <!-- mobile number -->
             <EditText android:id="@+id/donor_mobile_number"
                 android:layout_width="match_parent"
@@ -117,52 +131,17 @@
                 android:paddingLeft="10dp"
                 android:background="@drawable/et_back"
                 />
-
-
-            <!-- Password Label -->
-            <EditText android:id="@+id/donor_village_name"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:hint="Area / Village / Street Adress"
-                android:paddingLeft="10dp"
-                android:background="@drawable/et_back"
-                />
             <!-- Password Re-enter Label -->
-            <EditText android:id="@+id/donor_upazilla_name"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:hint="Upazilla / Thana"
-                android:paddingLeft="10dp"
-                android:background="@drawable/et_back"
-                />
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:hint="City"
-                android:paddingLeft="10dp"
-                android:background="@drawable/et_back"
-                android:id="@+id/donor_city_name"
-                />
-
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:inputType="textEmailAddress"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:hint="Email"
+                android:hint="Password"
                 android:paddingLeft="10dp"
                 android:background="@drawable/et_back"
-                android:id="@+id/donor_email"
+                android:id="@+id/donor_pass"
                 />
 
             <EditText
@@ -171,10 +150,10 @@
                 android:inputType="textPassword"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:hint="password"
+                android:hint="Re Enter Password"
                 android:paddingLeft="10dp"
                 android:background="@drawable/et_back"
-                android:id="@+id/donor_password"
+                android:id="@+id/donor_re_pass"
                 />
 
 

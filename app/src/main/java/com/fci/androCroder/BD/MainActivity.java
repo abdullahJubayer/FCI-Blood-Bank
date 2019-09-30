@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
     FirebaseFirestore db;
-    String blood_group_intent, email_intent;
+    String blood_group_intent, phone_intent;
     NavigationView navigationView;
     View headerView;
     Menu menu;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Home");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent intent = getIntent();
         blood_group_intent = intent.getStringExtra("B_group");
-        email_intent = intent.getStringExtra("email");
+        phone_intent = intent.getStringExtra("phone");
 
 
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loadUserdata() {
 
 
-        DocumentReference log_valid = db.collection("All_Blood_Group").document(blood_group_intent).collection("Male").document(email_intent);
+        DocumentReference log_valid = db.collection("All_Blood_Group").document(blood_group_intent).collection("Male").document(phone_intent);
         log_valid.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -168,25 +169,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(MainActivity.this, "Data Not Found", Toast.LENGTH_LONG).show();
                 }
                 DocumentSnapshot doc = task.getResult();
+                assert doc != null;
                 if (doc.exists()) {
 
                 if (task.isSuccessful()) {
 
+                    String u_name = doc.get(ConstName.name).toString();
+                    String u_image = doc.get(ConstName.imagePath).toString();
+                    String u_phone = doc.get(ConstName.phone1).toString();
+                    String u_blood_group = doc.get(ConstName.bloodGroup).toString();
+                    String u_last_donate = doc.get(ConstName.lastDonateDate).toString();
+                    String u_donet_times = doc.get(ConstName.give_blood).toString();
 
-                    String u_name = doc.get("Name").toString();
-                    String u_image = doc.get("Image").toString();
-                    String u_email = doc.get("Email").toString();
-                    String u_phone = doc.get("Phone1").toString();
-                    String u_blood_group = doc.get("Blood_Group").toString();
-                    String u_last_donate = doc.get("Last_Donate_Date").toString();
-                    String u_donet_times = doc.get("Give_Blood").toString();
-
-                    U_name=doc.get("Name").toString();
-                    U_photo=doc.get("Image").toString();
-                    U_phone=doc.get("Phone1").toString();
-                    U_last_donate=doc.get("Last_Donate_Date").toString();
-                    U_how_huch_donate=doc.get("Give_Blood").toString();
-                    gender=doc.get("Gender").toString();
+                    U_name=doc.get(ConstName.name).toString();
+                    U_photo=doc.get(ConstName.imagePath).toString();
+                    U_phone=doc.get(ConstName.phone1).toString();
+                    U_last_donate=doc.get(ConstName.lastDonateDate).toString();
+                    U_how_huch_donate=doc.get(ConstName.give_blood).toString();
+                    gender=doc.get(ConstName.gender).toString();
 
 
 
@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     TextView email = (TextView) headerView.findViewById(R.id.nav_email);
                     CircleImageView imageView = headerView.findViewById(R.id.nav_image);
                     navUsername.setText(u_name);
-                    email.setText(u_email);
                     Glide.with(MainActivity.this).load(u_image).into(imageView);
 
                     MenuItem nav_camara = menu.findItem(R.id.nav_phone);
@@ -217,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 else {
 
-                    DocumentReference log_valid = db.collection("All_Blood_Group").document(blood_group_intent).collection("Female").document(email_intent);
+                    DocumentReference log_valid = db.collection("All_Blood_Group").document(blood_group_intent).collection("Female").document(phone_intent);
                     log_valid.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -226,27 +225,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             if (doc.exists()){
 
                                 if (task.isSuccessful()){
-                                    String u_name = doc.get("Name").toString();
-                                    String u_image = doc.get("Image").toString();
-                                    String u_email = doc.get("Email").toString();
-                                    String u_phone = doc.get("Phone1").toString();
-                                    String u_blood_group = doc.get("Blood_Group").toString();
-                                    String u_last_donate = doc.get("Last_Donate_Date").toString();
-                                    String u_donet_times = doc.get("Give_Blood").toString();
+                                    String u_name = doc.get(ConstName.name).toString();
+                                    String u_image = doc.get(ConstName.imagePath).toString();
+                                    String u_phone = doc.get(ConstName.phone1).toString();
+                                    String u_blood_group = doc.get(ConstName.bloodGroup).toString();
+                                    String u_last_donate = doc.get(ConstName.lastDonateDate).toString();
+                                    String u_donet_times = doc.get(ConstName.give_blood).toString();
 
-                                    U_name=doc.get("Name").toString();
-                                    U_photo=doc.get("Image").toString();
-                                    U_phone=doc.get("Phone1").toString();
-                                    U_last_donate=doc.get("Last_Donate_Date").toString();
-                                    U_how_huch_donate=doc.get("Give_Blood").toString();
-                                    gender=doc.get("Gender").toString();
+                                    U_name=doc.get(ConstName.name).toString();
+                                    U_photo=doc.get(ConstName.imagePath).toString();
+                                    U_phone=doc.get(ConstName.phone1).toString();
+                                    U_last_donate=doc.get(ConstName.lastDonateDate).toString();
+                                    U_how_huch_donate=doc.get(ConstName.give_blood).toString();
+                                    gender=doc.get(ConstName.gender).toString();
 
 
                                     TextView navUsername = (TextView) headerView.findViewById(R.id.nav_name);
                                     TextView email = (TextView) headerView.findViewById(R.id.nav_email);
                                     CircleImageView imageView = headerView.findViewById(R.id.nav_image);
                                     navUsername.setText(u_name);
-                                    email.setText(u_email);
                                     Glide.with(MainActivity.this).load(u_image).into(imageView);
 
                                     MenuItem nav_camara = menu.findItem(R.id.nav_phone);
@@ -285,7 +282,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (menuItem.getItemId()==R.id.menu_edit_profile){
             Intent intent=new Intent(getApplicationContext(),EditProfile.class);
             intent.putExtra("Blood_group",blood_group_intent);
-            intent.putExtra("Email",email_intent);
             intent.putExtra("Phone",U_phone);
             intent.putExtra("Last_Donate",U_last_donate);
             intent.putExtra("How_Much",U_how_huch_donate);

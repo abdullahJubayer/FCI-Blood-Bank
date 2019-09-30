@@ -48,7 +48,7 @@ public class EditProfile extends AppCompatActivity {
     String down_Url;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
-    String bll, ell,phn,last_date,how_m,gender_m;
+    String bll,phn,last_date,how_m,gender_m;
     Button up_button;
     ProgressBar progressBar;
     private NetworkStateRecever networkStateRecever;
@@ -59,6 +59,7 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Edit Profile");
 
         mStorageRef = FirebaseStorage.getInstance().getReference("editable_photo");
@@ -66,7 +67,6 @@ public class EditProfile extends AppCompatActivity {
 
         Intent intent = getIntent();
         bll = intent.getStringExtra("Blood_group");
-        ell = intent.getStringExtra("Email");
         phn=intent.getStringExtra("Phone");
         last_date=intent.getStringExtra("Last_Donate");
         how_m=intent.getStringExtra("How_Much");
@@ -139,39 +139,34 @@ public class EditProfile extends AppCompatActivity {
 
         if (picture_file !=null){
             try {
-                Bitmap compressedImage=new Compressor(this)
+                File compressedImage=new Compressor(this)
                         .setMaxWidth(200)
                         .setMaxHeight(200)
                         .setQuality(75)
                         .setCompressFormat(Bitmap.CompressFormat.JPEG)
-                        .compressToBitmap(picture_file.getAbsoluteFile());
+                        .compressToFile(picture_file.getAbsoluteFile());
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                compressedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] data = baos.toByteArray();
-
-                UploadTask uploadTask=storageReference.putBytes(data);
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()){
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
                             down_Url = task.getResult().toString();
                             uploadWithImage();
-
-                            Log.i("downloadUrllllll", "onComplete: Url: "+ down_Url);
-                        }
-                        else {
+                            Log.i("downloadUrllllll", "onComplete: Url: " + down_Url);
+                        }else {
                             Toast.makeText(EditProfile.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.INVISIBLE);
                             up_button.setClickable(true);
                         }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(EditProfile.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        up_button.setClickable(true);
                     }
                 });
 
@@ -205,16 +200,16 @@ public class EditProfile extends AppCompatActivity {
         }
 
 
-        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(ell);
-        documentReference.update("Phone1",ph);
-        documentReference.update("Last_Donate_Date",lst);
-        documentReference.update("Give_Blood",how)
+        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(phn);
+        documentReference.update(ConstName.phone1,ph);
+        documentReference.update(ConstName.lastDonateDate,lst);
+        documentReference.update(ConstName.give_blood,how)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
 
                         update2_no_image();
-                        progressBar.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.GONE);
                         up_button.setClickable(true);
 
                     }
@@ -223,7 +218,7 @@ public class EditProfile extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(EditProfile.this, "Updated Failed", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.GONE);
                         up_button.setClickable(true);
                     }
                 });
@@ -246,11 +241,11 @@ public class EditProfile extends AppCompatActivity {
         if (how.isEmpty()){
             how=how_m;
         }
-        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(ell);
-        documentReference.update("Phone1",ph);
-        documentReference.update("Image",down_Url);
-        documentReference.update("Last_Donate_Date",lst);
-        documentReference.update("Give_Blood",how)
+        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(phn);
+        documentReference.update(ConstName.phone1,ph);
+        documentReference.update(ConstName.imagePath,down_Url);
+        documentReference.update(ConstName.lastDonateDate,lst);
+        documentReference.update(ConstName.give_blood,how)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -281,9 +276,9 @@ public class EditProfile extends AppCompatActivity {
             how=how_m;
         }
 
-        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(ell);
-        user.update("give_Blood",how);
-        user.update("image",down_Url)
+        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(phn);
+        user.update(ConstName.give_blood,how);
+        user.update(ConstName.imagePath,down_Url)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -304,8 +299,8 @@ public class EditProfile extends AppCompatActivity {
             how=how_m;
         }
 
-        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(ell);
-        user.update("give_Blood",how)
+        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(phn);
+        user.update(ConstName.give_blood,how)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

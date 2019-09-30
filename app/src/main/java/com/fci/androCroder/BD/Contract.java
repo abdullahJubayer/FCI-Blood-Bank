@@ -12,6 +12,7 @@ public class Contract extends AppCompatActivity {
         setContentView(R.layout.activity_contract);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Contract");
     }
 }

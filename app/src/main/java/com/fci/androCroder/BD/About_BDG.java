@@ -18,6 +18,7 @@ public class About_BDG extends AppCompatActivity {
         setContentView(R.layout.activity_about__bdg);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("About FCI Blood Donation");
 
     }

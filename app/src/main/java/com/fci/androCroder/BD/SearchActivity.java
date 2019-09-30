@@ -29,6 +29,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_search);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Search Donor");
 
         a_positive=findViewById(R.id.blood_group_a_positibe);

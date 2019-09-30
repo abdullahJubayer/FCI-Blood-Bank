@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -34,11 +35,9 @@ public class showBlood_donor extends AppCompatActivity {
     ArrayList<String> phone = new ArrayList<String>();
     ArrayList<String> department = new ArrayList<String>();
     ArrayList<String> Batch = new ArrayList<String>();
-    ArrayList<String> Village = new ArrayList<String>();
-    ArrayList<String> Upazilla = new ArrayList<String>();
+    ArrayList<String> Address = new ArrayList<String>();
     ArrayList<String> Gender = new ArrayList<String>();
     ArrayList<String> blood_group = new ArrayList<String>();
-    ArrayList<String> Email = new ArrayList<String>();
     ArrayList<String> Give_Blood = new ArrayList<String>();
     private NetworkStateRecever networkStateRecever;
 
@@ -48,6 +47,7 @@ public class showBlood_donor extends AppCompatActivity {
         setContentView(R.layout.activity_show_blood_donor);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("All Donor");
 
         db = FirebaseFirestore.getInstance();
@@ -72,39 +72,36 @@ public class showBlood_donor extends AppCompatActivity {
                         db.collection("All_Blood_Group").document(Blood_group).collection(Gender_intent).addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
                                 name.clear();
                                 image.clear();
                                 last_donet_date.clear();
                                 phone.clear();
                                 department.clear();
                                 Batch.clear();
-                                Village.clear();
-                                Upazilla.clear();
+                                Address.clear();
                                 Gender.clear();
                                 blood_group.clear();
-                                Email.clear();
                                 Give_Blood.clear();
                                 for (DocumentSnapshot snapshot : documentSnapshots) {
 
-                                    name.add(snapshot.get("Name").toString());
-                                    image.add(snapshot.get("Image").toString());
-                                    last_donet_date.add(snapshot.get("Last_Donate_Date").toString());
-                                    phone.add(snapshot.get("Phone1").toString());
-                                    department.add(snapshot.get("Department").toString());
-                                    Batch.add(snapshot.get("Batch").toString());
-                                    Village.add(snapshot.get("Village").toString());
-                                    Upazilla.add(snapshot.get("Upazilla").toString());
-                                    Gender.add(snapshot.get("Gender").toString());
-                                    blood_group.add(snapshot.get("Blood_Group").toString());
-                                    Email.add(snapshot.get("Email").toString());
-                                    Give_Blood.add(snapshot.get("Give_Blood").toString());
+                                    name.add(snapshot.get(ConstName.name).toString());
+                                    image.add(snapshot.get(ConstName.imagePath).toString());
+                                    last_donet_date.add(snapshot.get(ConstName.lastDonateDate).toString());
+                                    phone.add(snapshot.get(ConstName.phone1).toString());
+                                    department.add(snapshot.get(ConstName.department).toString());
+                                    Batch.add(snapshot.get(ConstName.batch).toString());
+                                    Address.add(snapshot.get(ConstName.address).toString());
+                                    Gender.add(snapshot.get(ConstName.gender).toString());
+                                    blood_group.add(snapshot.get(ConstName.bloodGroup).toString());
+                                    Give_Blood.add(snapshot.get(ConstName.give_blood).toString());
 
                                 }
 
                                 //adapter
                                 show_blood_donor_adapter adapter =
                                         new show_blood_donor_adapter(showBlood_donor.this, name, image,
-                                                last_donet_date, phone, department, Batch, Village, Upazilla, Gender, blood_group, Email, Give_Blood);
+                                                last_donet_date, phone, department, Batch, Address, Gender, blood_group, Give_Blood);
 
                                 adapter.notifyDataSetChanged();
                                 listView.setAdapter(adapter);
@@ -124,7 +121,6 @@ public class showBlood_donor extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(showBlood_donor.this, DonorDetails.class);
                 intent.putExtra("name", name.get(position));
-                intent.putExtra("Email", Email.get(position));
                 intent.putExtra("Image", image.get(position));
                 intent.putExtra("Phone", phone.get(position));
                 intent.putExtra("Department", department.get(position));
@@ -132,8 +128,7 @@ public class showBlood_donor extends AppCompatActivity {
                 intent.putExtra("Blood_group", blood_group.get(position));
                 intent.putExtra("Last_Donate_Date", last_donet_date.get(position));
                 intent.putExtra("Give_Blood", Give_Blood.get(position));
-                intent.putExtra("Village", Village.get(position));
-                intent.putExtra("Upazilla", Upazilla.get(position));
+                intent.putExtra("Address", Address.get(position));
                 startActivity(intent);
                 finishActivity(0);
             }

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,9 +35,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+
+import id.zelory.compressor.Compressor;
 
 public class uploadPhotoActivity extends AppCompatActivity {
 
@@ -46,6 +51,7 @@ public class uploadPhotoActivity extends AppCompatActivity {
     private ImageView mImageView;
     private File picture_file;
     String down_Url;
+    private FirebaseStorage storage;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
     String nameof_writer;
@@ -63,8 +69,8 @@ public class uploadPhotoActivity extends AppCompatActivity {
             actionBar.setTitle("Upload Photo");
         }
 
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+        storage = FirebaseStorage.getInstance();
+        mStorageRef = storage.getReference("uploads");
         db = FirebaseFirestore.getInstance();
 
         Intent intent=getIntent();
@@ -119,78 +125,54 @@ public class uploadPhotoActivity extends AppCompatActivity {
     }
 
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
-
     private void uploadImage(final String message) {
 
         final StorageReference storageReference = mStorageRef.child(System.currentTimeMillis()
-                + "." + getFileExtension(mImageUri));
+                + ".jpg");
 
-        if (mImageUri != null) {
-            storageReference.putFile(mImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
+        if (picture_file !=null){
+            try {
+                File compressedImage=new Compressor(this)
+                        .setMaxWidth(200)
+                        .setMaxHeight(200)
+                        .setQuality(75)
+                        .setCompressFormat(Bitmap.CompressFormat.JPEG)
+                        .compressToFile(picture_file.getAbsoluteFile());
 
+                final UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return storageReference.getDownloadUrl();
                     }
-                    return storageReference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                            }
-                        }, 500);
-
-                        if (task.isSuccessful()){
-
-                             down_Url=task.getResult().toString();
-
-                            if (message.isEmpty()){
-                                Toast.makeText(uploadPhotoActivity.this,"Please Write Something",Toast.LENGTH_SHORT).show();
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            down_Url = task.getResult().toString();
+                            if (nameof_writer != null && imageof_writer != null){
+                                uploadData(message,down_Url,nameof_writer,imageof_writer);
                                 progressBar.setVisibility(View.INVISIBLE);
                                 mButtonUpload.setClickable(true);
-                            }else {
-                                if (nameof_writer != null && imageof_writer != null){
-                                    uploadData(message,down_Url,nameof_writer,imageof_writer);
-                                }
-                                else {
-                                    Toast.makeText(uploadPhotoActivity.this,"Something Missing",Toast.LENGTH_SHORT).show();
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                    mButtonUpload.setClickable(true);
-                                }
                             }
-
+                            Log.i("downloadUrllllll", "onComplete: Url: " + down_Url);
+                        }else {
+                            Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            mButtonUpload.setClickable(true);
                         }
-
-                    } else {
-                        Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        mButtonUpload.setClickable(true);
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    mButtonUpload.setClickable(true);
-                }
-            });
-
+                });
+            } catch (IOException e) {
+                Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+                mButtonUpload.setClickable(true);
+            }
 
         }
-
     }
 
     private void uploadData(String message, String down_Url, String nameof_writer, String imageof_writer) {

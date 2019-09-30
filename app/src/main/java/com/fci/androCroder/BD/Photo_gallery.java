@@ -54,6 +54,7 @@ public class Photo_gallery extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Gallery");
 
         mRecyclerView = findViewById(R.id.recycler_view);

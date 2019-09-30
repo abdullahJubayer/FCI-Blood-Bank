@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1051771832380-t9gvcrfdncp4q64pbgcn85kbh16kupes.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fci.androCroder.BD",
+            "certificate_hash": "003755577701ae18251bb4150b0515a7fb8ac6ae"
+          }
+        },
+        {
           "client_id": "1051771832380-k3ap0ps304932otukncs3j4o0nnl6s2r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

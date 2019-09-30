@@ -3,9 +3,9 @@
     package="com.fci.androCroder.BD">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,25 +15,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.fci.androCroder.BD.Post_activity"
+            android:name=".Post_activity"
             android:configChanges="orientation"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.SearchActivity"
+            android:name=".SearchActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Add_Donor"
+            android:name=".Add_Donor"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Login_activity"
+            android:name=".Login_activity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -43,66 +42,66 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.fci.androCroder.BD.showBlood_donor"
+            android:name=".showBlood_donor"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Contract"
+            android:name=".Contract"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.About_Us"
+            android:name=".About_Us"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Facts"
+            android:name=".Facts"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.About_BDG"
+            android:name=".About_BDG"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.DonorDetails"
+            android:name=".DonorDetails"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Photo_gallery"
+            android:name=".Photo_gallery"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.uploadPhotoActivity"
+            android:name=".uploadPhotoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.EditProfile"
+            android:name=".EditProfile"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.Male_Female_Choose"
+            android:name=".Male_Female_Choose"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.TopDonor"
+            android:name=".TopDonor"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.fci.androCroder.BD.showTopDonor"
+            android:name=".showTopDonor"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity android:name="com.fci.androCroder.BD.Forgot_activity"></activity>
+        <activity android:name=".Forgot_activity" />
 
-        <service android:name=".Service.NotificationService"
+        <service
+            android:name=".Service.NotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <receiver android:name=".Service.NetworkStateRecever">
-            <intent-filter >
-                <action android:name = "android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name = "android.net.wifi.WIFI_STATE_CHANGED" />
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
     </application>

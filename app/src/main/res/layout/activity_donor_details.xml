@@ -40,13 +40,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Email"
-            android:id="@+id/details_email"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:text="Phone"
             android:id="@+id/details_Phone"
             />
@@ -75,16 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Village"
-            android:id="@+id/details_village"
-            android:maxLines="1"
-            android:ellipsize="end"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Upazilla"
+            android:text="Address :"
             android:id="@+id/details_upazilla"
             android:maxLines="1"
             android:ellipsize="end"

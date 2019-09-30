@@ -26,20 +26,18 @@ public class show_blood_donor_adapter extends BaseAdapter {
     ArrayList<String> phone;
     ArrayList<String> department;
     ArrayList<String> Batch;
-    ArrayList<String> Village;
-    ArrayList<String> Upazilla;
+    ArrayList<String> Address;
     ArrayList<String> Gender;
     ArrayList<String> blood_group;
-    ArrayList<String> Email;
     ArrayList<String> Give_Blood;
     LayoutInflater layoutInflater;
 
 
     public show_blood_donor_adapter(Context context, ArrayList<String> name,
                                     ArrayList<String> image, ArrayList<String> last_donet_date, ArrayList<String> phone,
-                                    ArrayList<String> department, ArrayList<String> batch, ArrayList<String> village,
-                                    ArrayList<String> upazilla, ArrayList<String> gender, ArrayList<String> blood_group,
-                                    ArrayList<String> email, ArrayList<String> give_Blood) {
+                                    ArrayList<String> department, ArrayList<String> batch,
+                                    ArrayList<String> Address, ArrayList<String> gender, ArrayList<String> blood_group,
+                                    ArrayList<String> give_Blood) {
         this.context = context;
         this.name = name;
         this.image = image;
@@ -47,11 +45,9 @@ public class show_blood_donor_adapter extends BaseAdapter {
         this.phone = phone;
         this.department = department;
         Batch = batch;
-        Village = village;
-        Upazilla = upazilla;
+        this.Address = Address;
         Gender = gender;
         this.blood_group = blood_group;
-        Email = email;
         Give_Blood = give_Blood;
     }
 

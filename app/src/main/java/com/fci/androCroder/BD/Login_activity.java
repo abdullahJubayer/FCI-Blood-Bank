@@ -22,7 +22,6 @@ import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Login_activity extends AppCompatActivity {
     Spinner spinner_login2;
     ArrayAdapter<CharSequence> login_type2;
-    EditText log_email,log_pass;
+    EditText log_phone,log_pass;
     Button button;
     TextView  newAccount,forgot_acc;
     private FirebaseAuth mAuth;
@@ -52,7 +51,7 @@ public class Login_activity extends AppCompatActivity {
         }
 
         spinner_login2=findViewById(R.id.login_spinner2_id);
-        log_email=findViewById(R.id.login_email_id);
+        log_phone=findViewById(R.id.login_phone_id);
         log_pass=findViewById(R.id.login_password_id);
         button=findViewById(R.id.login_log_id);
         newAccount=findViewById(R.id.login_to_new_id);
@@ -108,57 +107,40 @@ public class Login_activity extends AppCompatActivity {
     }
 
 
-    private void login(final String email, final String pass, final String blood) {
-
-        mAuth.signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            /*if (mAuth.getCurrentUser().isEmailVerified()){
-                                newIntent(email,blood);
-                                Toast.makeText(getApplicationContext(), "Authentication Success.", Toast.LENGTH_SHORT).show();
-                            }else {
-                                Toast.makeText(getApplicationContext(), "Email not Verified..!", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.INVISIBLE);
-                                button.setClickable(true);
-                            }*/
-                            newIntent(email,blood);
-                            progressBar.setVisibility(View.INVISIBLE);
-                            button.setClickable(true);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.INVISIBLE);
-                            button.setClickable(true);
-                        }
-
-                    }
-                });
+    private void login(final String phone, final String pass, final String blood) {
+        if (!(phone.isEmpty() || pass.isEmpty()|| blood.isEmpty())){
+            newIntent(phone,blood);
+            Toast.makeText(getApplicationContext(), "Authentication Success.", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getApplicationContext(), "User Not Found..!", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.INVISIBLE);
+            button.setClickable(true);
+        }
 
     }
 
-    private void newIntent(String email, String blood) {
+    private void newIntent(String phone, String blood) {
         Intent intent=new Intent(Login_activity.this,MainActivity.class);
         intent.putExtra("B_group",blood);
-        intent.putExtra("email",email);
+        intent.putExtra("phone",phone);
         startActivity(intent);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
         button.setClickable(true);
 
     }
 
     public boolean valid(){
 
-        String email= log_email.getText().toString();
+        String email= log_phone.getText().toString();
         String pass=log_pass.getText().toString();
         String type = spinner_login2.getSelectedItem().toString();
 
         boolean valid=true;
         if (email.isEmpty()){
-            log_email.setError("Wrong Email Formate");
+            log_phone.setError("Wrong Email Formate");
             valid=false;
         } else {
-            log_email.setError(null);
+            log_phone.setError(null);
         }
         if (pass.isEmpty()|| pass.length()<6){
             log_pass.setError("at last 6 character");
@@ -177,29 +159,31 @@ public class Login_activity extends AppCompatActivity {
     public void getBloodGroup(final String blood_gp){
 
 
-        final String email = log_email.getText().toString();
+        final String phone = log_phone.getText().toString();
         final String pass = log_pass.getText().toString();
 
-            db.collection("All_Blood_Group").document(blood_gp).collection("Male").document(email)
+            db.collection("All_Blood_Group").document(blood_gp).collection("Male").document(phone)
                     .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()){
                         DocumentSnapshot doc=task.getResult();
+                        assert doc != null;
                         if (doc.exists()){
-                            login_valid(doc,blood_gp,email,pass);
+                            login_valid(doc,blood_gp,phone,pass);
                         }
                         else {
 
-                            db.collection("All_Blood_Group").document(blood_gp).collection("Female").document(email)
+                            db.collection("All_Blood_Group").document(blood_gp).collection("Female").document(phone)
                                     .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                                     if (task.isSuccessful()){
                                         DocumentSnapshot doc=task.getResult();
+                                        assert doc != null;
                                         if (doc.exists()){
-                                            login_valid(doc,blood_gp,email,pass);
+                                            login_valid(doc,blood_gp,phone,pass);
                                         }
                                         else {
                                             Toast.makeText(getApplicationContext(),"User Not Found..!",Toast.LENGTH_SHORT).show();
@@ -226,11 +210,14 @@ public class Login_activity extends AppCompatActivity {
 
             }
 
-            public void login_valid(DocumentSnapshot doc,String blood_gp,String  email,String pass){
-                    String database_bg=doc.get("Blood_Group").toString();
-                    Log.i("Dataaaa",database_bg);
-                    if (database_bg.equals(blood_gp)){
-                        login(email,pass,blood_gp);
+            public void login_valid(DocumentSnapshot doc,String blood_gp,String  phone,String pass){
+                    String database_bg= (String) doc.get(ConstName.bloodGroup);
+                    String database_phone= (String) doc.get(ConstName.phone1);
+                    String database_pass= (String) doc.get(ConstName.password);
+                    Log.i("Dataaaa",database_bg+"Phone"+database_phone+"pass"+database_pass);
+                assert database_bg != null;
+                if (database_bg.equals(blood_gp) && phone.equals(database_phone) && pass.equals(database_pass)){
+                        login(phone,pass,blood_gp);
                     }else {
                         Toast.makeText(getApplicationContext(),"Blood Group Not Match",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);

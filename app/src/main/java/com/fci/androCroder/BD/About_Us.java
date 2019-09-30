@@ -12,6 +12,7 @@ public class About_Us extends AppCompatActivity {
         setContentView(R.layout.activity_about__us);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("About Us");
     }
 }
