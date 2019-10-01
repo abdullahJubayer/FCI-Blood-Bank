@@ -109,6 +109,8 @@ public class Login_activity extends AppCompatActivity {
 
     private void login(final String phone, final String pass, final String blood) {
         if (!(phone.isEmpty() || pass.isEmpty()|| blood.isEmpty())){
+            preferences.edit().putString("Phone",phone).putString("BloodGroup",blood).apply();
+            Log.e("Preferences","Save");
             newIntent(phone,blood);
             Toast.makeText(getApplicationContext(), "Authentication Success.", Toast.LENGTH_SHORT).show();
         }else {
@@ -247,6 +249,13 @@ public class Login_activity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (preferences.contains("Phone") && preferences.contains("BloodGroup")){
+            String phone=preferences.getString("Phone",null);
+            String blood=preferences.getString("BloodGroup",null);
+            if (phone != null && blood != null){
+                newIntent(phone,blood);
+            }
+        }
         networkStateRecever=new NetworkStateRecever();
         registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }

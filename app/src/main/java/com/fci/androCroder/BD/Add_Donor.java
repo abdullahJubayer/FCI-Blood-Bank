@@ -327,8 +327,6 @@ public class Add_Donor extends AppCompatActivity  {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             uploadImage();
-                            progressBar.setVisibility(View.INVISIBLE);
-                            save_button.setClickable(true);
                         } else {
                             progressBar.setVisibility(View.INVISIBLE);
                             save_button.setClickable(true);
@@ -415,7 +413,7 @@ public class Add_Donor extends AppCompatActivity  {
 
                 DocumentReference user=db.collection("All_donor_Info").document(blood_group).collection("Top_Donor").document(phone1);
                 user.set(model);
-                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.INVISIBLE);
                 save_button.setClickable(true);
 
             }
@@ -423,7 +421,7 @@ public class Add_Donor extends AppCompatActivity  {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(Add_Donor.this, "Donor Registered Failed...!"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.INVISIBLE);
                 save_button.setClickable(true);
             }
         });

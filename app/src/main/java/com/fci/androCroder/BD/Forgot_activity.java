@@ -2,6 +2,7 @@ package com.fci.androCroder.BD;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
@@ -150,10 +151,11 @@ public class Forgot_activity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(Forgot_activity.this, "go Password reset page", Toast.LENGTH_SHORT).show();
+                            String number=phone.getText().toString().trim();
+                            startActivity(new Intent(Forgot_activity.this,NewPassword.class).putExtra("Number",number));
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Log.e("Error","Credential Failed");
+                                Log.e("Error","Code Not Match");
                             }
                         }
                     }
