@@ -1,20 +1,18 @@
 package com.fci.androCroder.BD;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -125,10 +123,18 @@ public class uploadPhotoActivity extends AppCompatActivity {
     }
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> Branch2
     private void uploadImage(final String message) {
 
         final StorageReference storageReference = mStorageRef.child(System.currentTimeMillis()
                 + ".jpg");
+<<<<<<< HEAD
+=======
+
+>>>>>>> Branch2
 
         if (picture_file !=null){
             try {
@@ -139,7 +145,11 @@ public class uploadPhotoActivity extends AppCompatActivity {
                         .setCompressFormat(Bitmap.CompressFormat.JPEG)
                         .compressToFile(picture_file.getAbsoluteFile());
 
+<<<<<<< HEAD
                 final UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+=======
+                UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+>>>>>>> Branch2
                 Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -152,26 +162,51 @@ public class uploadPhotoActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
+<<<<<<< HEAD
                             down_Url = task.getResult().toString();
                             if (nameof_writer != null && imageof_writer != null){
                                 uploadData(message,down_Url,nameof_writer,imageof_writer);
+=======
+                            if (message.isEmpty()){
+                                Toast.makeText(uploadPhotoActivity.this,"Please Write Something",Toast.LENGTH_SHORT).show();
+>>>>>>> Branch2
                                 progressBar.setVisibility(View.INVISIBLE);
                                 mButtonUpload.setClickable(true);
                             }
+<<<<<<< HEAD
                             Log.i("downloadUrllllll", "onComplete: Url: " + down_Url);
+=======
+>>>>>>> Branch2
                         }else {
                             Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.INVISIBLE);
                             mButtonUpload.setClickable(true);
                         }
+<<<<<<< HEAD
                     }
                 });
             } catch (IOException e) {
                 Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+=======
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        mButtonUpload.setClickable(true);
+                    }
+                });
+            } catch (IOException e) {
+>>>>>>> Branch2
                 progressBar.setVisibility(View.INVISIBLE);
                 mButtonUpload.setClickable(true);
             }
 
+        }else {
+            Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.INVISIBLE);
+            mButtonUpload.setClickable(true);
         }
     }
 

@@ -46,6 +46,16 @@
                     android:src="@drawable/add_image_icon"
 
                     />
+                <EditText android:id="@+id/edit_pro_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:inputType="number"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Name"
+                    android:paddingLeft="15dp"
+                    android:background="@drawable/et_back_red"
+                    />
                 <EditText android:id="@+id/edit_pro_phon"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"

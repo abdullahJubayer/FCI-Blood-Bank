@@ -2,8 +2,8 @@ package com.fci.androCroder.BD;
 
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.fci.androCroder.BD.Service.NetworkStateRecever;
@@ -18,6 +18,7 @@ public class Facts extends AppCompatActivity {
         setContentView(R.layout.activity_facts);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Facts");
     }
 

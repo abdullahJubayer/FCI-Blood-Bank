@@ -4,9 +4,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -32,7 +33,7 @@ public class Login_activity extends AppCompatActivity {
     EditText log_phone,log_pass;
     Button button;
     TextView  newAccount,forgot_acc;
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     FirebaseFirestore db;
     ProgressBar progressBar;
     SharedPreferences preferences;
@@ -107,6 +108,7 @@ public class Login_activity extends AppCompatActivity {
     }
 
 
+<<<<<<< HEAD
     private void login(final String phone, final String pass, final String blood) {
         if (!(phone.isEmpty() || pass.isEmpty()|| blood.isEmpty())){
             preferences.edit().putString("Phone",phone).putString("BloodGroup",blood).apply();
@@ -118,6 +120,42 @@ public class Login_activity extends AppCompatActivity {
             progressBar.setVisibility(View.INVISIBLE);
             button.setClickable(true);
         }
+=======
+    private void login(final String email, final String pass, final String blood) {
+
+        mAuth.signInWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user=mAuth.getCurrentUser();
+                                if (user !=null){
+                                    if (user.isEmailVerified()){
+                                        newIntent(email,blood);
+                                        preferences.edit().putString("Email",email).apply();
+                                        preferences.edit().putString("Password",pass).apply();
+                                        preferences.edit().putString("BloodGroup",blood).apply();
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(), "Email not Verified..!", Toast.LENGTH_SHORT).show();
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        button.setClickable(true);
+                                    }
+                                }
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    button.setClickable(true);
+                                }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            button.setClickable(true);
+                        }
+
+                    }
+                });
+>>>>>>> Branch2
 
     }
 
@@ -249,11 +287,19 @@ public class Login_activity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+<<<<<<< HEAD
         if (preferences.contains("Phone") && preferences.contains("BloodGroup")){
             String phone=preferences.getString("Phone",null);
             String blood=preferences.getString("BloodGroup",null);
             if (phone != null && blood != null){
                 newIntent(phone,blood);
+=======
+        if (preferences !=null){
+            String email=preferences.getString("Email",null);
+            String bloodgroup=preferences.getString("BloodGroup",null);
+            if (email != null && bloodgroup != null){
+                newIntent(email,bloodgroup);
+>>>>>>> Branch2
             }
         }
         networkStateRecever=new NetworkStateRecever();

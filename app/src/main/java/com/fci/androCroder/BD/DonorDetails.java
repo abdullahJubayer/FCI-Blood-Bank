@@ -3,8 +3,8 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -16,7 +16,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DonorDetails extends AppCompatActivity {
     CircleImageView details_image;
+<<<<<<< HEAD
     TextView de_name,de_phone,de_blood_grp,de_lastdonet,de_times,de_address;
+=======
+    TextView de_name,de_email,de_phone,de_blood_grp,de_lastdonet,de_times,de_address;
+>>>>>>> Branch2
     private NetworkStateRecever networkStateRecever;
 
     @Override
@@ -33,7 +37,11 @@ public class DonorDetails extends AppCompatActivity {
         de_blood_grp=findViewById(R.id.details_blood_group);
         de_lastdonet=findViewById(R.id.details_last_donate_date);
         de_times=findViewById(R.id.details_times_donate);
+<<<<<<< HEAD
         de_address=findViewById(R.id.details_upazilla);
+=======
+        de_address=findViewById(R.id.details_address);
+>>>>>>> Branch2
 
 
         Intent intent=getIntent();
@@ -43,14 +51,22 @@ public class DonorDetails extends AppCompatActivity {
         String blood_gp=intent.getStringExtra("Blood_group");
         String last_do=intent.getStringExtra("Last_Donate_Date");
         String times=intent.getStringExtra("Give_Blood");
+<<<<<<< HEAD
         String upazill=intent.getStringExtra("Address");
+=======
+        String address=intent.getStringExtra("Address");
+>>>>>>> Branch2
 
         de_name.setText("Name: "+name);
         de_phone.setText("Phone: "+phone);
         de_blood_grp.setText("Blood Group:  "+blood_gp);
         de_lastdonet.setText("Last Donate: "+last_do);
         de_times.setText("Donate Times: "+times);
+<<<<<<< HEAD
         de_address.setText("Address: "+upazill);
+=======
+        de_address.setText("Address: "+address);
+>>>>>>> Branch2
 
         Glide.with(this)
                 .load(image)

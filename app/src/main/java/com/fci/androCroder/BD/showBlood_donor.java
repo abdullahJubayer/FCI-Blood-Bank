@@ -3,9 +3,9 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -85,6 +85,7 @@ public class showBlood_donor extends AppCompatActivity {
                                 Give_Blood.clear();
                                 for (DocumentSnapshot snapshot : documentSnapshots) {
 
+<<<<<<< HEAD
                                     name.add(snapshot.get(ConstName.name).toString());
                                     image.add(snapshot.get(ConstName.imagePath).toString());
                                     last_donet_date.add(snapshot.get(ConstName.lastDonateDate).toString());
@@ -95,13 +96,30 @@ public class showBlood_donor extends AppCompatActivity {
                                     Gender.add(snapshot.get(ConstName.gender).toString());
                                     blood_group.add(snapshot.get(ConstName.bloodGroup).toString());
                                     Give_Blood.add(snapshot.get(ConstName.give_blood).toString());
+=======
+                                    name.add(snapshot.get("Name").toString());
+                                    image.add(snapshot.get("Image").toString());
+                                    last_donet_date.add(snapshot.get("Last_Donate_Date").toString());
+                                    phone.add(snapshot.get("Phone1").toString());
+                                    department.add(snapshot.get("Department").toString());
+                                    Batch.add(snapshot.get("Batch").toString());
+                                    Address.add(snapshot.get("Address").toString());
+                                    Gender.add(snapshot.get("Gender").toString());
+                                    blood_group.add(snapshot.get("Blood_Group").toString());
+                                    Email.add(snapshot.get("Email").toString());
+                                    Give_Blood.add(snapshot.get("Give_Blood").toString());
+>>>>>>> Branch2
 
                                 }
 
                                 //adapter
                                 show_blood_donor_adapter adapter =
                                         new show_blood_donor_adapter(showBlood_donor.this, name, image,
+<<<<<<< HEAD
                                                 last_donet_date, phone, department, Batch, Address, Gender, blood_group, Give_Blood);
+=======
+                                                last_donet_date, phone, department, Batch, Address, Gender, blood_group, Email, Give_Blood);
+>>>>>>> Branch2
 
                                 adapter.notifyDataSetChanged();
                                 listView.setAdapter(adapter);
