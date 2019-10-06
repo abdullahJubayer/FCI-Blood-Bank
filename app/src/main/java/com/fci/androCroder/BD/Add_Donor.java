@@ -1,13 +1,16 @@
 package com.fci.androCroder.BD;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,18 +24,20 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,14 +48,14 @@ import id.zelory.compressor.Compressor;
 
 public class Add_Donor extends AppCompatActivity  {
     private static final int RQ_CODE = 1;
-    EditText d_name,d_depertmant,d_semester,d_phone1,d_village,d_upazilla,d_city,d_email,d_pass;
+    EditText d_name,d_depertmant,d_semester,d_phone1,d_address,d_email,d_pass,d_re_pass;
     Button save_button;
     CircleImageView donor_image;
     File picture_file;
     String ImagedownloadUrl;
     FirebaseFirestore db;
-    private StorageReference mStorageRef;
-    private FirebaseAuth mAuth;
+    StorageReference mStorageRef;
+    FirebaseAuth mAuth;
     Spinner spinner,spinner2;
     ArrayAdapter<CharSequence> adapterGender;
     ArrayAdapter<CharSequence> adapterBlood;
@@ -71,20 +76,19 @@ public class Add_Donor extends AppCompatActivity  {
         d_depertmant=findViewById(R.id.donor_department);
         d_semester=findViewById(R.id.donor_semester);
         d_phone1=findViewById(R.id.donor_mobile_number);
-        d_village=findViewById(R.id.donor_village_name);
-        d_upazilla=findViewById(R.id.donor_upazilla_name);
-        d_city=findViewById(R.id.donor_city_name);
+        d_address=findViewById(R.id.donor_address);
         save_button=findViewById(R.id.donor_save_button);
         spinner=findViewById(R.id.gender_select_spinner);
         spinner2=findViewById(R.id.blood_select_spinner);
         d_email=findViewById(R.id.donor_email);
         d_pass=findViewById(R.id.donor_password);
+        d_re_pass=findViewById(R.id.donor_re_pass);
         progressBar=findViewById(R.id.spin_kit_new_donor);
 
         FadingCircle fadingCircle = new FadingCircle();
         progressBar.setIndeterminateDrawable(fadingCircle);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mStorageRef = FirebaseStorage.getInstance().getReference("All_donor_photo/"+System.currentTimeMillis()+".jpg");
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
@@ -163,51 +167,41 @@ public class Add_Donor extends AppCompatActivity  {
 
     private void uploadImage() {
 
-        String name= d_name.getText().toString();
-        String batch = d_semester.getText().toString();
-        final StorageReference storageReference=
-                FirebaseStorage.getInstance().getReference("All_donor_photo/"+name+batch+".jpg");
+        final StorageReference storageReference=mStorageRef;
 
         if (picture_file !=null){
             try {
-                Bitmap compressedImage=new Compressor(this)
+                File compressedImage=new Compressor(this)
                         .setMaxWidth(200)
                         .setMaxHeight(200)
                         .setQuality(75)
                         .setCompressFormat(Bitmap.CompressFormat.JPEG)
-                        .compressToBitmap(picture_file.getAbsoluteFile());
+                        .compressToFile(picture_file.getAbsoluteFile());
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                compressedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] data = baos.toByteArray();
-
-                UploadTask uploadTask=storageReference.putBytes(data);
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()){
-                            ImagedownloadUrl = task.getResult().toString();
-                            UploadUserData();
-
-                            Log.i("downloadUrllllll", "onComplete: Url: "+ ImagedownloadUrl);
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
                         }
-                        else {
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful() && task.getResult() !=null) {
+                            ImagedownloadUrl =task.getResult().toString().trim();
+                            UploadUserData();
+                            Log.i("downloadUrllllll", "onComplete: Url: " + ImagedownloadUrl);
+                        }else {
                             Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.INVISIBLE);
                             save_button.setClickable(true);
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        save_button.setClickable(true);
-                    }
                 });
-
             } catch (IOException e) {
-                Toast.makeText(Add_Donor.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
                 save_button.setClickable(true);
             }
@@ -219,20 +213,19 @@ public class Add_Donor extends AppCompatActivity  {
 
     }
 
-
     private void UploadUserData() {
 
+        final String email= d_email.getText().toString();
         final String name= d_name.getText().toString();
         final String department=d_depertmant.getText().toString();
-        final String batch = d_semester.getText().toString();
-        String phone1 = d_phone1.getText().toString();
-        String village = d_village.getText().toString();
-        String upazilla = d_upazilla.getText().toString();
-        String city = d_city.getText().toString();
-         final String gender=spinner.getSelectedItem().toString();
+        final String semester = d_semester.getText().toString();
+        final String phone1 = d_phone1.getText().toString();
+        String address = d_address.getText().toString();
+        final String gender=spinner.getSelectedItem().toString();
         final String blood_group=spinner2.getSelectedItem().toString();
-         final String email= d_email.getText().toString();
-         final String give_blood="0";
+        String pass= d_pass.getText().toString();
+        String last_donate= "0/0/0";
+        final String give_blood="0";
 
 
              final Map<String, Object> newContact = new HashMap<>();
@@ -241,27 +234,25 @@ public class Add_Donor extends AppCompatActivity  {
             newContact.put("Name", name);
             newContact.put("Image", ImagedownloadUrl);
             newContact.put("Department", department);
-            newContact.put("Batch", batch);
+            newContact.put("Batch", semester);
             newContact.put("Phone1", phone1);
-            newContact.put("Village", village);
-            newContact.put("Upazilla", upazilla);
-            newContact.put("City", city);
+            newContact.put("Address", address);
             newContact.put("Gender", gender);
             newContact.put("Blood_Group", blood_group);
             newContact.put("Email", email);
-            newContact.put("Last_Donate_Date","0-0-0");
+            newContact.put("Last_Donate_Date",last_donate);
             newContact.put("Give_Blood", give_blood);
+            newContact.put("Password", pass);
 
 
         DocumentReference user=db.collection("All_Blood_Group").document(blood_group).collection(gender).document(email);
                user.set(newContact).addOnCompleteListener(new OnCompleteListener<Void>() {
                    @Override
                    public void onComplete(@NonNull Task<Void> task) {
-                       Toast.makeText(Add_Donor.this, "Donor Registered Success...!", Toast.LENGTH_SHORT).show();
-
-                       Top_Donor_Note data=new Top_Donor_Note(name,ImagedownloadUrl,department,batch,gender,blood_group,give_blood);
+                       Top_Donor_Note data=new Top_Donor_Note(name,ImagedownloadUrl,department,semester,gender,blood_group,give_blood);
                        DocumentReference user=db.collection("All_donor_Info").document(blood_group).collection("Top_Donor").document(email);
                        user.set(data);
+                       showDialog();
                        progressBar.setVisibility(View.INVISIBLE);
                        save_button.setClickable(true);
 
@@ -286,21 +277,28 @@ public class Add_Donor extends AppCompatActivity  {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            uploadImage();
-                            if (mAuth.getCurrentUser().sendEmailVerification().isSuccessful()){
-                                Toast.makeText(getApplicationContext(), "Please Check Your Email...!", Toast.LENGTH_SHORT).show();
+
+                            FirebaseUser user=mAuth.getCurrentUser();
+                            if (user != null){
+                                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()){
+                                            uploadImage();
+                                        }
+                                    }
+                                });
                             }
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(getApplicationContext(), "Donor Registered failed3", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Donor Registered failed", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            save_button.setClickable(true);
                         }
-
-                        // ...
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Donor Registered failed2"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Donor Registered failed"+e.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
                 save_button.setClickable(true);
             }
@@ -313,14 +311,13 @@ public class Add_Donor extends AppCompatActivity  {
         String name= d_name.getText().toString();
         String department=d_depertmant.getText().toString();
         String semester = d_semester.getText().toString();
-        String phone1 = d_phone1.getText().toString();
-        String village = d_village.getText().toString();
-        String upazilla = d_upazilla.getText().toString();
-        String city = d_city.getText().toString();
+        String phone1 = d_phone1.getText().toString();;
+        String address = d_address.getText().toString();
         String gender=spinner.getSelectedItem().toString();
         String blood_group=spinner2.getSelectedItem().toString();
         String email= d_email.getText().toString();
         String pass= d_pass.getText().toString();
+        String re_pass= d_re_pass.getText().toString();
 
 
         if (name.isEmpty() || name.length() < 3) {
@@ -350,23 +347,11 @@ public class Add_Donor extends AppCompatActivity  {
         } else {
             d_phone1.setError(null);
         }
-        if (village.isEmpty()){
-            d_village.setError("Village Null");
+        if (address.isEmpty()){
+            d_address.setError("Village Null");
             valid=false;
         } else {
-            d_village.setError(null);
-        }
-        if (upazilla.isEmpty()){
-            d_upazilla.setError("Upazilla/Thana Null");
-            valid=false;
-        } else {
-            d_upazilla.setError(null);
-        }
-        if (city.isEmpty()){
-            d_city.setError("City Null");
-            valid=false;
-        } else {
-            d_city.setError(null);
+            d_address.setError(null);
         }
         if (gender.isEmpty()|| gender.equals("Select Gender")){
             Toast.makeText(getApplicationContext(),"Error in Gender",Toast.LENGTH_SHORT).show();
@@ -388,6 +373,12 @@ public class Add_Donor extends AppCompatActivity  {
         } else {
             d_pass.setError(null);
         }
+        if (re_pass.isEmpty()|| !(re_pass.equals(pass))){
+            d_re_pass.setError("Password Not Match");
+            valid=false;
+        } else {
+            d_re_pass.setError(null);
+        }
 
         return valid;
     }
@@ -405,4 +396,20 @@ public class Add_Donor extends AppCompatActivity  {
         networkStateRecever=new NetworkStateRecever();
         registerReceiver(networkStateRecever,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
+
+    private void showDialog(){
+        new AlertDialog.Builder(Add_Donor.this)
+                .setTitle("Registration Successful")
+                .setMessage("Please Check Your Email To Verify Your Account")
+                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
 }

@@ -3,13 +3,13 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -54,6 +54,7 @@ public class Photo_gallery extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Gallery");
 
         mRecyclerView = findViewById(R.id.recycler_view);
@@ -80,16 +81,23 @@ public class Photo_gallery extends AppCompatActivity {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
                             mUploads.clear();
+                            assert documentSnapshots != null;
                             for (DocumentSnapshot postSnapshot : documentSnapshots) {
 
-                                String des=postSnapshot.get("mName").toString();
-                                String de_img=postSnapshot.get("mImageUrl").toString();
-                                String name=postSnapshot.get("name").toString();
-                                String image=postSnapshot.get("image").toString();
-                                String date=postSnapshot.get("date").toString();
+                                if (postSnapshot != null){
+                                    String des=postSnapshot.get("mName").toString();
+                                    String de_img=postSnapshot.get("mImageUrl").toString();
+                                    String name=postSnapshot.get("name").toString();
+                                    String image=postSnapshot.get("image").toString();
+                                    String date=postSnapshot.get("date").toString();
 
-                                Upload upload=new Upload(des,de_img,name,image,date);
-                                mUploads.add(upload);
+                                    Upload upload=new Upload(des,de_img,name,image,date);
+                                    mUploads.add(upload);
+                                }
+                                else {
+                                    Toast.makeText(Photo_gallery.this,"Data Not Found",Toast.LENGTH_LONG).show();
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                }
                             }
 
                             mAdapter = new ImageAdapter(Photo_gallery.this, mUploads);

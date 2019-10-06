@@ -3,8 +3,8 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -16,7 +16,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DonorDetails extends AppCompatActivity {
     CircleImageView details_image;
-    TextView de_name,de_email,de_phone,de_blood_grp,de_lastdonet,de_times,de_village,de_upazilla;
+    TextView de_name,de_email,de_phone,de_blood_grp,de_lastdonet,de_times,de_address;
     private NetworkStateRecever networkStateRecever;
 
     @Override
@@ -24,6 +24,7 @@ public class DonorDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donor_details);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Donor Details");
 
         details_image=findViewById(R.id.details_image);
@@ -33,8 +34,7 @@ public class DonorDetails extends AppCompatActivity {
         de_blood_grp=findViewById(R.id.details_blood_group);
         de_lastdonet=findViewById(R.id.details_last_donate_date);
         de_times=findViewById(R.id.details_times_donate);
-        de_village=findViewById(R.id.details_village);
-        de_upazilla=findViewById(R.id.details_upazilla);
+        de_address=findViewById(R.id.details_address);
 
 
         Intent intent=getIntent();
@@ -45,8 +45,7 @@ public class DonorDetails extends AppCompatActivity {
         String blood_gp=intent.getStringExtra("Blood_group");
         String last_do=intent.getStringExtra("Last_Donate_Date");
         String times=intent.getStringExtra("Give_Blood");
-        String village=intent.getStringExtra("Village");
-        String upazill=intent.getStringExtra("Upazilla");
+        String address=intent.getStringExtra("Address");
 
         de_name.setText("Name: "+name);
         de_email.setText("Email: "+email);
@@ -54,8 +53,7 @@ public class DonorDetails extends AppCompatActivity {
         de_blood_grp.setText("Blood Group:  "+blood_gp);
         de_lastdonet.setText("Last Donate: "+last_do);
         de_times.setText("Donate Times: "+times);
-        de_village.setText("Village: "+village);
-        de_upazilla.setText("Upazilla: "+upazill);
+        de_address.setText("Address: "+address);
 
         Glide.with(this)
                 .load(image)

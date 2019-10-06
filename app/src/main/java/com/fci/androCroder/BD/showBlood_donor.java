@@ -3,9 +3,9 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,8 +34,7 @@ public class showBlood_donor extends AppCompatActivity {
     ArrayList<String> phone = new ArrayList<String>();
     ArrayList<String> department = new ArrayList<String>();
     ArrayList<String> Batch = new ArrayList<String>();
-    ArrayList<String> Village = new ArrayList<String>();
-    ArrayList<String> Upazilla = new ArrayList<String>();
+    ArrayList<String> Address = new ArrayList<String>();
     ArrayList<String> Gender = new ArrayList<String>();
     ArrayList<String> blood_group = new ArrayList<String>();
     ArrayList<String> Email = new ArrayList<String>();
@@ -48,6 +47,7 @@ public class showBlood_donor extends AppCompatActivity {
         setContentView(R.layout.activity_show_blood_donor);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("All Donor");
 
         db = FirebaseFirestore.getInstance();
@@ -78,8 +78,7 @@ public class showBlood_donor extends AppCompatActivity {
                                 phone.clear();
                                 department.clear();
                                 Batch.clear();
-                                Village.clear();
-                                Upazilla.clear();
+                                Address.clear();
                                 Gender.clear();
                                 blood_group.clear();
                                 Email.clear();
@@ -92,8 +91,7 @@ public class showBlood_donor extends AppCompatActivity {
                                     phone.add(snapshot.get("Phone1").toString());
                                     department.add(snapshot.get("Department").toString());
                                     Batch.add(snapshot.get("Batch").toString());
-                                    Village.add(snapshot.get("Village").toString());
-                                    Upazilla.add(snapshot.get("Upazilla").toString());
+                                    Address.add(snapshot.get("Address").toString());
                                     Gender.add(snapshot.get("Gender").toString());
                                     blood_group.add(snapshot.get("Blood_Group").toString());
                                     Email.add(snapshot.get("Email").toString());
@@ -104,7 +102,7 @@ public class showBlood_donor extends AppCompatActivity {
                                 //adapter
                                 show_blood_donor_adapter adapter =
                                         new show_blood_donor_adapter(showBlood_donor.this, name, image,
-                                                last_donet_date, phone, department, Batch, Village, Upazilla, Gender, blood_group, Email, Give_Blood);
+                                                last_donet_date, phone, department, Batch, Address, Gender, blood_group, Email, Give_Blood);
 
                                 adapter.notifyDataSetChanged();
                                 listView.setAdapter(adapter);
@@ -132,8 +130,7 @@ public class showBlood_donor extends AppCompatActivity {
                 intent.putExtra("Blood_group", blood_group.get(position));
                 intent.putExtra("Last_Donate_Date", last_donet_date.get(position));
                 intent.putExtra("Give_Blood", Give_Blood.get(position));
-                intent.putExtra("Village", Village.get(position));
-                intent.putExtra("Upazilla", Upazilla.get(position));
+                intent.putExtra("Address", Address.get(position));
                 startActivity(intent);
                 finishActivity(0);
             }

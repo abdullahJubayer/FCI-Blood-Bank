@@ -1,7 +1,7 @@
 package com.fci.androCroder.BD;
 
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class Contract extends AppCompatActivity {
@@ -12,6 +12,7 @@ public class Contract extends AppCompatActivity {
         setContentView(R.layout.activity_contract);
 
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Contract");
     }
 }

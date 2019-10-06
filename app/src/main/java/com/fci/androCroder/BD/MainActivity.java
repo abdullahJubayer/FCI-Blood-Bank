@@ -3,14 +3,14 @@ package com.fci.androCroder.BD;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -284,9 +284,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (menuItem.getItemId()==R.id.menu_edit_profile){
             Intent intent=new Intent(getApplicationContext(),EditProfile.class);
+            intent.putExtra("Name",U_name);
             intent.putExtra("Blood_group",blood_group_intent);
             intent.putExtra("Email",email_intent);
             intent.putExtra("Phone",U_phone);
+            intent.putExtra("Image",U_photo);
             intent.putExtra("Last_Donate",U_last_donate);
             intent.putExtra("How_Much",U_how_huch_donate);
             intent.putExtra("Gender",gender);

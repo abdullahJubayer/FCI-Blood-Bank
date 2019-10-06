@@ -5,11 +5,9 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +19,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,13 +39,13 @@ import id.zelory.compressor.Compressor;
 public class EditProfile extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    EditText e_phone, e_lastdonate, e_how;
-    CircleImageView e_image;
+    EditText userPhone, userLastDonateDate, userHowMuchDonate, userName;
+    CircleImageView userImage;
     private File picture_file;
     String down_Url;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
-    String bll, ell,phn,last_date,how_m,gender_m;
+    String bloodGroup, email, phone, lastDonateDate, howMDonate,gender_m,usrName,uImage;
     Button up_button;
     ProgressBar progressBar;
     private NetworkStateRecever networkStateRecever;
@@ -59,17 +56,20 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Edit Profile");
 
         mStorageRef = FirebaseStorage.getInstance().getReference("editable_photo");
         db = FirebaseFirestore.getInstance();
 
         Intent intent = getIntent();
-        bll = intent.getStringExtra("Blood_group");
-        ell = intent.getStringExtra("Email");
-        phn=intent.getStringExtra("Phone");
-        last_date=intent.getStringExtra("Last_Donate");
-        how_m=intent.getStringExtra("How_Much");
+        usrName = intent.getStringExtra("Name");
+        bloodGroup = intent.getStringExtra("Blood_group");
+        email = intent.getStringExtra("Email");
+        phone =intent.getStringExtra("Phone");
+        phone =intent.getStringExtra("Image");
+        lastDonateDate =intent.getStringExtra("Last_Donate");
+        howMDonate =intent.getStringExtra("How_Much");
         gender_m=intent.getStringExtra("Gender");
 
         progressBar=findViewById(R.id.spin_kit_edit);
@@ -77,15 +77,21 @@ public class EditProfile extends AppCompatActivity {
         progressBar.setIndeterminateDrawable(fadingCircle);
 
 
-
-        e_phone = findViewById(R.id.edit_pro_phon);
-        e_lastdonate = findViewById(R.id.edit_pro_lastdonate);
-        e_how = findViewById(R.id.edit_pro_howmuch);
-        e_image = findViewById(R.id.edit_pro_image);
+        userName =findViewById(R.id.edit_pro_name);
+        userPhone = findViewById(R.id.edit_pro_phon);
+        userLastDonateDate = findViewById(R.id.edit_pro_lastdonate);
+        userHowMuchDonate = findViewById(R.id.edit_pro_howmuch);
+        userImage = findViewById(R.id.edit_pro_image);
         up_button=findViewById(R.id.upload_button);
 
+        userName.setText(usrName);
+        userPhone.setText(phone);
+        userLastDonateDate.setText(lastDonateDate);
+        userHowMuchDonate.setText(howMDonate);
+        Glide.with(EditProfile.this).load(uImage).into(userImage);
 
-        e_image.setOnClickListener(new View.OnClickListener() {
+
+        userImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileChooser();
@@ -121,7 +127,7 @@ public class EditProfile extends AppCompatActivity {
             try {
                 picture_file=FileUtil.from(EditProfile.this,data.getData());
                 Bitmap img = BitmapFactory.decodeFile(picture_file.getAbsolutePath());
-                Glide.with(EditProfile.this).load(img).into(e_image);
+                Glide.with(EditProfile.this).load(img).into(userImage);
             } catch (IOException e) {
                 Toast.makeText(EditProfile.this,"Error in Select Image",Toast.LENGTH_LONG).show();
             }
@@ -190,22 +196,29 @@ public class EditProfile extends AppCompatActivity {
 
     public void uploadWithoutImage() {
 
-        String ph = e_phone.getText().toString();
-        String lst = e_lastdonate.getText().toString();
-        String how = e_how.getText().toString();
+        String name=userName.getText().toString().trim();
+        String ph = userPhone.getText().toString();
+        String lst = userLastDonateDate.getText().toString();
+        String how = userHowMuchDonate.getText().toString();
 
-        if (ph.isEmpty()){
-            ph=phn;
+
+        if (name.isEmpty()){
+            name= usrName;
+        }if (ph.isEmpty()){
+            ph= phone;
+        }if (ph.isEmpty()){
+            ph= phone;
         }
         if (lst.isEmpty()){
-            lst=last_date;
+            lst= lastDonateDate;
         }
         if (how.isEmpty()){
-            how=how_m;
+            how= howMDonate;
         }
 
 
-        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(ell);
+        DocumentReference documentReference=db.collection("All_Blood_Group").document(bloodGroup).collection(gender_m).document(email);
+        documentReference.update("Name",name);
         documentReference.update("Phone1",ph);
         documentReference.update("Last_Donate_Date",lst);
         documentReference.update("Give_Blood",how)
@@ -233,20 +246,25 @@ public class EditProfile extends AppCompatActivity {
 
     public void uploadWithImage() {
 
+        String name=userName.getText().toString().trim();
+        String ph = userPhone.getText().toString();
+        String lst = userLastDonateDate.getText().toString();
+        String how = userHowMuchDonate.getText().toString();
 
-        String ph = e_phone.getText().toString();
-        String lst = e_lastdonate.getText().toString();
-        String how = e_how.getText().toString();
+        if (name.isEmpty()){
+            name= usrName;
+        }
         if (ph.isEmpty()){
-            ph=phn;
+            ph= phone;
         }
         if (lst.isEmpty()){
-            lst=last_date;
+            lst= lastDonateDate;
         }
         if (how.isEmpty()){
-            how=how_m;
+            how= howMDonate;
         }
-        DocumentReference documentReference=db.collection("All_Blood_Group").document(bll).collection(gender_m).document(ell);
+        DocumentReference documentReference=db.collection("All_Blood_Group").document(bloodGroup).collection(gender_m).document(email);
+        documentReference.update("Name",name);
         documentReference.update("Phone1",ph);
         documentReference.update("Image",down_Url);
         documentReference.update("Last_Donate_Date",lst);
@@ -276,12 +294,12 @@ public class EditProfile extends AppCompatActivity {
 
     private void update2_with_image() {
 
-        String how = e_how.getText().toString();
+        String how = userHowMuchDonate.getText().toString();
         if (how.isEmpty()){
-            how=how_m;
+            how= howMDonate;
         }
 
-        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(ell);
+        DocumentReference user=db.collection("All_donor_Info").document(bloodGroup).collection("Top_Donor").document(email);
         user.update("give_Blood",how);
         user.update("image",down_Url)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -299,12 +317,12 @@ public class EditProfile extends AppCompatActivity {
 
     private void update2_no_image() {
 
-        String how = e_how.getText().toString();
+        String how = userHowMuchDonate.getText().toString();
         if (how.isEmpty()){
-            how=how_m;
+            how= howMDonate;
         }
 
-        DocumentReference user=db.collection("All_donor_Info").document(bll).collection("Top_Donor").document(ell);
+        DocumentReference user=db.collection("All_donor_Info").document(bloodGroup).collection("Top_Donor").document(email);
         user.update("give_Blood",how)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

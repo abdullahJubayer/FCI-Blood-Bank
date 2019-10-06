@@ -75,17 +75,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Village"
-            android:id="@+id/details_village"
-            android:maxLines="1"
-            android:ellipsize="end"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Upazilla"
-            android:id="@+id/details_upazilla"
+            android:text="Address"
+            android:id="@+id/details_address"
             android:maxLines="1"
             android:ellipsize="end"
             />

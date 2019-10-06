@@ -1,10 +1,12 @@
 package com.fci.androCroder.BD;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +31,7 @@ public class Forgot_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_activity);
         ActionBar actionBar=getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Forgot Password");
 
         email=findViewById(R.id.forgot_email);
@@ -51,7 +54,18 @@ public class Forgot_activity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(Forgot_activity.this,"Email sent.",Toast.LENGTH_LONG).show();
+                                        AlertDialog dialog=new AlertDialog.Builder(Forgot_activity.this)
+                                                .setTitle("Verification Email Sent")
+                                                .setMessage("Please Check Your Email")
+                                                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                    }
+                                                })
+                                                .setCancelable(false)
+                                                .create();
+                                        dialog.show();
                                         send_btn.setClickable(true);
                                     }else {
                                         Toast.makeText(Forgot_activity.this,"Email Not sent.",Toast.LENGTH_LONG).show();

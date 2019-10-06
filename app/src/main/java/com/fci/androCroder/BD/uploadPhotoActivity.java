@@ -1,19 +1,17 @@
 package com.fci.androCroder.BD;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,6 +34,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+
+import id.zelory.compressor.Compressor;
 
 public class uploadPhotoActivity extends AppCompatActivity {
 
@@ -119,43 +119,35 @@ public class uploadPhotoActivity extends AppCompatActivity {
     }
 
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
 
     private void uploadImage(final String message) {
 
         final StorageReference storageReference = mStorageRef.child(System.currentTimeMillis()
-                + "." + getFileExtension(mImageUri));
+                + ".jpg");
 
-        if (mImageUri != null) {
-            storageReference.putFile(mImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
 
+        if (picture_file !=null){
+            try {
+                File compressedImage=new Compressor(this)
+                        .setMaxWidth(200)
+                        .setMaxHeight(200)
+                        .setQuality(75)
+                        .setCompressFormat(Bitmap.CompressFormat.JPEG)
+                        .compressToFile(picture_file.getAbsoluteFile());
+
+                UploadTask uploadTask=storageReference.putFile(Uri.fromFile(compressedImage));
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return storageReference.getDownloadUrl();
                     }
-                    return storageReference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                            }
-                        }, 500);
-
-                        if (task.isSuccessful()){
-
-                             down_Url=task.getResult().toString();
-
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
                             if (message.isEmpty()){
                                 Toast.makeText(uploadPhotoActivity.this,"Please Write Something",Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.INVISIBLE);
@@ -170,27 +162,30 @@ public class uploadPhotoActivity extends AppCompatActivity {
                                     mButtonUpload.setClickable(true);
                                 }
                             }
-
+                        }else {
+                            Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.",Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            mButtonUpload.setClickable(true);
                         }
-
-                    } else {
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                         mButtonUpload.setClickable(true);
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    mButtonUpload.setClickable(true);
-                }
-            });
+                });
+            } catch (IOException e) {
+                progressBar.setVisibility(View.INVISIBLE);
+                mButtonUpload.setClickable(true);
+            }
 
-
+        }else {
+            Toast.makeText(uploadPhotoActivity.this, "Picture Upload failed.", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.INVISIBLE);
+            mButtonUpload.setClickable(true);
         }
-
     }
 
     private void uploadData(String message, String down_Url, String nameof_writer, String imageof_writer) {
