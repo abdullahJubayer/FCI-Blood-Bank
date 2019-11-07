@@ -27,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
+
 public class Login_activity extends AppCompatActivity {
     Spinner spinner_login2;
     ArrayAdapter<CharSequence> login_type2;
@@ -143,6 +145,7 @@ public class Login_activity extends AppCompatActivity {
         startActivity(intent);
         progressBar.setVisibility(View.INVISIBLE);
         button.setClickable(true);
+        finish();
 
     }
 

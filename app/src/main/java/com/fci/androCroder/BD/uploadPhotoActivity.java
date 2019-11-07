@@ -1,7 +1,13 @@
 package com.fci.androCroder.BD;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -10,6 +16,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +43,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import id.zelory.compressor.Compressor;
+
+import static com.fci.androCroder.BD.CheckReadPermission.checkPermissionREAD_EXTERNAL_STORAGE;
 
 public class uploadPhotoActivity extends AppCompatActivity {
 
@@ -217,10 +229,12 @@ public class uploadPhotoActivity extends AppCompatActivity {
 
 
     private void openFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        }
     }
 
     @Override

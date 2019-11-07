@@ -11,6 +11,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.cardview.widget.CardView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth mAuth;
     String U_name,U_photo,U_phone,U_last_donate,U_how_huch_donate,gender;
     private NetworkStateRecever networkStateRecever;
+    private boolean doubleBackToExitPressedOnce = false;
+
 
     @Override
     protected void onStart() {
@@ -323,6 +327,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStop() {
         unregisterReceiver(networkStateRecever);
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finish();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
 }

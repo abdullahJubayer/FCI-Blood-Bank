@@ -1,9 +1,11 @@
 package com.fci.androCroder.BD;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -11,6 +13,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,8 +46,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
+
+import static com.fci.androCroder.BD.CheckReadPermission.checkPermissionREAD_EXTERNAL_STORAGE;
 
 public class Add_Donor extends AppCompatActivity  {
     private static final int RQ_CODE = 1;
@@ -157,10 +165,12 @@ public class Add_Donor extends AppCompatActivity  {
     }
 
     public void selectImage(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, RQ_CODE);
+        if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, RQ_CODE);
+        }
     }
 
 

@@ -18,12 +18,14 @@ import com.fci.androCroder.BD.Service.NetworkStateRecever;
 import com.github.ybq.android.spinkit.style.FadingCircle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -71,43 +73,34 @@ public class Photo_gallery extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        DocumentReference user = db.collection("Photogallery").document();
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        CollectionReference user = db.collection("Photogallery");
+        user.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                mUploads.clear();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                        String des = snapshot.get("mName").toString();
+                        String de_img = snapshot.get("mImageUrl").toString();
+                        String name = snapshot.get("name").toString();
+                        String image = snapshot.get("image").toString();
 
-                    db.collection("Photogallery").orderBy("date",Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                            mUploads.clear();
-                            for (DocumentSnapshot postSnapshot : documentSnapshots) {
-                                String des=postSnapshot.get("mName").toString();
-                                String de_img=postSnapshot.get("mImageUrl").toString();
-                                String name=postSnapshot.get("name").toString();
-                                String image=postSnapshot.get("image").toString();
-                                String date=postSnapshot.get("date").toString();
+                        Upload upload = new Upload(des, de_img, name, image, date);
+                        mUploads.add(upload);
 
-                                Upload upload=new Upload(des,de_img,name,image,date);
-                                mUploads.add(upload);
-                            }
-
-                            mAdapter = new ImageAdapter(Photo_gallery.this, mUploads);
-                            mAdapter.notifyDataSetChanged();
-                             mRecyclerView.setAdapter(mAdapter);
-                            progressBar.setVisibility(View.INVISIBLE);
-
-                        }
-                    });
-
+                        mAdapter = new ImageAdapter(Photo_gallery.this, mUploads);
+                        mAdapter.notifyDataSetChanged();
+                        mRecyclerView.setAdapter(mAdapter);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
                 }else {
                     Toast.makeText(Photo_gallery.this,"Data Not Found",Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.INVISIBLE);
 
                 }
             }
-        });
-
+            })
+            ;
 
         Intent intent = getIntent();
         User_name = intent.getStringExtra("send_name");
